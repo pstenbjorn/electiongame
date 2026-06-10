@@ -34,11 +34,20 @@
 
   <footer class="footer">
     <span>Training simulation &mdash; nonpartisan. Candidates and parties are abstract by design.</span>
-    <span class="module-tag">Module: Vote-by-Mail Processing</span>
+    <span id="moduleTag" class="module-tag">Module: Office Overview</span>
   </footer>
 
-  <script src="scenarios.js"></script>
   <script src="signature.js"></script>
+  <script src="engine.js"></script>
+  <!-- Modules self-register in this order; it sets the order on the hub. -->
+  <script src="mod_petition.js"></script>
+  <script src="mod_finance.js"></script>
+  <script src="mod_siting.js"></script>
+  <script src="mod_ballot.js"></script>
+  <script src="mod_registration.js"></script>
+  <script src="mod_vbm.js"></script>
+  <script src="mod_provisional.js"></script>
+  <script src="mod_results.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
