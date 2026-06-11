@@ -32,6 +32,7 @@
 
   const cfg = {
     cases: cases,
+    law: "canvass",
     id: "results",
     label: "Results, Reconciliation & Canvass",
     icon: "&#9989;", // check

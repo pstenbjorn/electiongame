@@ -9,10 +9,10 @@
       registrationStatus: "this_precinct", lookup: "Active registration confirmed at this precinct — clerical omission from the printed roster.",
       idRequired: false, idCured: null, alreadyVoted: false },
     { id: "PRV-202", voter: "Hector D. Salinas", reason: "Voted at the wrong precinct (right county)",
-      registrationStatus: "other_precinct_same_jx", lookup: "Registered in Clearwater County, but assigned to Precinct 14 — voted in Precinct 9.",
+      registrationStatus: "other_precinct_same_jx", lookup: "Registered in {county}, but assigned to Precinct 14 — voted in Precinct 9.",
       idRequired: false, idCured: null, alreadyVoted: false },
     { id: "PRV-203", voter: "Renee A. Whitlock", reason: "Moved out of the county before the election",
-      registrationStatus: "other_jurisdiction", lookup: "Registration is now in Easton County. Not eligible to vote on Clearwater County's ballot.",
+      registrationStatus: "other_jurisdiction", lookup: "Registration is now in a neighboring county. Not eligible to vote on {county}'s ballot.",
       idRequired: false, idCured: null, alreadyVoted: false },
     { id: "PRV-204", voter: "Samuel O. Briggs", reason: "Could not present required ID at the polls",
       registrationStatus: "this_precinct", lookup: "Registration confirmed at this precinct.",
@@ -30,7 +30,7 @@
       registrationStatus: "not_registered", lookup: "No registration found in any jurisdiction; no timely application on record.",
       idRequired: false, idCured: null, alreadyVoted: false },
     { id: "PRV-209", voter: "Yuki Tanaka-Reyes", reason: "Moved within the county, address not updated",
-      registrationStatus: "this_precinct", lookup: "Registered in Clearwater County; voted the precinct serving the new address. Address update is permissible.",
+      registrationStatus: "this_precinct", lookup: "Registered in {county}; voted the precinct serving the new address. Address update is permissible.",
       idRequired: false, idCured: null, alreadyVoted: false },
     { id: "PRV-210", voter: "Bernard E. Quist", reason: "Wrong precinct AND no valid registration here",
       registrationStatus: "other_jurisdiction", lookup: "Voted in Precinct 3; registration is in another county. Wrong precinct is moot — not eligible on this ballot at all.",
@@ -48,6 +48,7 @@
 
   const cfg = {
     cases: cases,
+    law: "provisional",
     id: "provisional",
     label: "Provisional Ballot Adjudication",
     icon: "&#9878;", // scales of justice
@@ -118,7 +119,7 @@
         detail = "No registration exists and no timely application is on record. Eligibility is the threshold for any count. Reject.";
         cite = { tag: "Registration required", body: "No valid, timely registration → the provisional cannot be counted." };
       } else if (c.registrationStatus === "other_jurisdiction") {
-        detail = "The voter is registered in another jurisdiction, so they were never eligible to vote Clearwater County's ballot. The wrong-precinct question is moot. Reject here (the other jurisdiction handles their eligibility).";
+        detail = "The voter is registered in another jurisdiction, so they were never eligible to vote {county}'s ballot. The wrong-precinct question is moot. Reject here (the other jurisdiction handles their eligibility).";
         cite = { tag: "Jurisdiction", body: "A voter not registered in this jurisdiction has nothing to count on this ballot." };
       } else if (c.idRequired && c.idCured === false) {
         detail = "ID was required and the voter did not satisfy the cure by the deadline. The remedy existed and went unused. Reject — and confirm the cure log shows the missed deadline.";

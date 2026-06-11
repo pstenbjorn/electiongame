@@ -49,7 +49,81 @@
   };
 
   EG.setProgress = function (i, n) { caseProgress().textContent = i + " / " + n; };
-  EG.setModuleTag = function (label) { if (moduleTag()) moduleTag().textContent = "Module: " + label; };
+  EG.setModuleTag = function (label) { if (moduleTag()) moduleTag().textContent = "Module: " + EG.tmpl(label); };
+
+  // ---- Jurisdiction config (branding, parameters, legal citations) ----
+  EG.config = {};
+
+  // Read a dotted path out of the config, with a fallback.
+  EG.jx = function (path, dflt) {
+    const parts = path.split(".");
+    let v = EG.config;
+    for (const p of parts) { if (v == null) return dflt; v = v[p]; }
+    return v == null ? dflt : v;
+  };
+
+  // Substitute {tokens} from the jurisdiction config into any rendered string.
+  EG.tmpl = function (str) {
+    if (typeof str !== "string" || str.indexOf("{") === -1) return str;
+    const j = EG.config.jurisdiction || {};
+    const r = EG.config.resources || {};
+    const map = {
+      county: j.county, state: j.state, stateAbbr: j.stateAbbr,
+      office: j.office, director: j.directorTitle, seal: j.seal,
+      navigatorName: r.navigatorName, navigatorUrl: r.navigatorUrl,
+      regWait: EG.jx("parameters.registration.confirmationWaitText", "the statutory waiting period"),
+    };
+    return str.replace(/\{(\w+)\}/g, (m, k) => (map[k] != null ? map[k] : m));
+  };
+
+  // Load jurisdiction.config.json when served over HTTP; fall back to the
+  // embedded window.JURISDICTION_DEFAULT (config.js) on file:// or any error.
+  EG.loadConfig = function () {
+    const fallback = global.JURISDICTION_DEFAULT || {};
+    if (typeof fetch !== "function") { EG.config = fallback; return Promise.resolve(EG.config); }
+    return fetch("jurisdiction.config.json")
+      .then((res) => (res && res.ok ? res.json() : Promise.reject(new Error("bad response"))))
+      .then((json) => { EG.config = json; return EG.config; })
+      .catch(() => { EG.config = fallback; return EG.config; });
+  };
+
+  // Push branding from the config into the page chrome.
+  EG.applyBranding = function () {
+    const j = EG.config.jurisdiction || {};
+    const set = (id, val) => { const el = document.getElementById(id); if (el && val != null) el.textContent = val; };
+    set("brandTitle", j.county);
+    set("brandSub", j.office);
+    set("brandSeal", j.seal);
+    if (j.county) { try { document.title = j.county + " — Election Administrator Trainer"; } catch (e) {} }
+  };
+
+  // ---- Legal-basis rendering (from the citations library in the config) ----
+  EG.cite = function (key) { return (EG.config.citations || {})[key] || null; };
+
+  function renderLegalBasis(law) {
+    const entry = EG.cite(law);
+    if (!entry) return "";
+    const navUrl = EG.jx("resources.navigatorUrl", "https://electionlawnavigator.org/");
+    const navName = EG.jx("resources.navigatorName", "Election Law Navigator");
+    const rows = (entry.authorities || []).map(function (a) {
+      const label = EG.tmpl(a.cite || "");
+      const note = EG.tmpl(a.note || "");
+      const href = a.url || navUrl;
+      const lvl = a.level || "";
+      const cls = lvl === "Federal" ? "lvl-fed" : "lvl-state";
+      const star = a.configurable ? ' <span class="cfg-flag" title="Configure this citation for your jurisdiction">configure</span>' : "";
+      return `<li class="auth"><span class="auth-lvl ${cls}">${lvl}</span>
+        <a class="auth-cite" href="${href}" target="_blank" rel="noopener noreferrer">${label}</a>${star}
+        ${note ? `<div class="auth-note">${note}</div>` : ""}</li>`;
+    }).join("");
+    const topic = entry.navigatorTopic ? EG.tmpl(entry.navigatorTopic) : "";
+    return `<div class="legal-basis">
+        <div class="lb-head">Legal basis</div>
+        <ul class="auth-list">${rows}</ul>
+        <a class="lb-nav" href="${navUrl}" target="_blank" rel="noopener noreferrer">
+          ↪ Research in the ${navName}${topic ? `: <em>${topic}</em>` : ""}</a>
+      </div>`;
+  }
 
   // ---- Persistence (so progress survives a check-in tomorrow) ----
   const STORE_KEY = "clearwater_progress_v1";
@@ -96,8 +170,8 @@
             <span class="dept-icon" aria-hidden="true">${m.icon || "&#9733;"}</span>
             <span class="dept-num">${String(i + 1).padStart(2, "0")}</span>
           </div>
-          <div class="dept-title">${m.title}</div>
-          <div class="dept-summary">${m.summary}</div>
+          <div class="dept-title">${EG.tmpl(m.title)}</div>
+          <div class="dept-summary">${EG.tmpl(m.summary)}</div>
           ${badge}
         </button>`;
     }).join("");
@@ -106,7 +180,7 @@
     const view = EG.el(`
       <section>
         <div class="card hub-hero">
-          <div class="kicker">Clearwater County &middot; Office of the Election Director</div>
+          <div class="kicker">${EG.tmpl("{county} &middot; {office}")}</div>
           <h1>The election cycle, one desk at a time</h1>
           <p class="lead">Each department hands you a queue of real decisions. Choose the action you could defend
           to a court or an auditor — and document why. You are scored on the integrity of the process, never on who wins.</p>
@@ -157,16 +231,17 @@
     EG.setModuleTag(cfg.label);
     EG.setProgress(0, cfg.cases.length);
 
-    const rulesHtml = cfg.rules.map((r) => `<li><strong>${r.h}.</strong> ${r.t}</li>`).join("");
-    const introHtml = cfg.intro.map((p) => `<p class="lead">${p}</p>`).join("");
+    const rulesHtml = cfg.rules.map((r) => `<li><strong>${EG.tmpl(r.h)}.</strong> ${EG.tmpl(r.t)}</li>`).join("");
+    const introHtml = cfg.intro.map((p) => `<p class="lead">${EG.tmpl(p)}</p>`).join("");
+    const keyDates = typeof cfg.keyDates === "function" ? cfg.keyDates() : cfg.keyDates;
     const view = EG.el(`
       <section class="card">
-        <div class="kicker">${cfg.label}</div>
-        <h1>${cfg.headline || cfg.title}</h1>
+        <div class="kicker">${EG.tmpl(cfg.label)}</div>
+        <h1>${EG.tmpl(cfg.headline || cfg.title)}</h1>
         ${introHtml}
-        <h2>${cfg.rulesTitle || "The rules of the desk"}</h2>
+        <h2>${EG.tmpl(cfg.rulesTitle || "The rules of the desk")}</h2>
         <ul class="rules-list">${rulesHtml}</ul>
-        ${cfg.keyDates ? `<p class="muted">${cfg.keyDates}</p>` : ""}
+        ${keyDates ? `<p class="muted">${EG.tmpl(keyDates)}</p>` : ""}
         <div class="start-actions">
           <button class="btn btn-primary" id="startBtn">${cfg.beginLabel || "Begin"} &rarr;</button>
           <button class="btn btn-ghost" id="hubBtn">&larr; Office overview</button>
@@ -195,11 +270,11 @@
       <section class="card">
         <div class="kicker">${cfg.caseKicker || "Case"} ${run.index + 1} of ${cfg.cases.length}</div>
         <div class="case-head">
-          <h2 class="voter-name">${head.title}</h2>
+          <h2 class="voter-name">${EG.tmpl(head.title)}</h2>
           <span class="voter-id">${head.id || ""}</span>
         </div>
-        ${head.sub ? `<p class="muted" style="margin:.2rem 0 0">${head.sub}</p>` : ""}
-        <div class="case-body">${cfg.caseBody(c)}</div>
+        ${head.sub ? `<p class="muted" style="margin:.2rem 0 0">${EG.tmpl(head.sub)}</p>` : ""}
+        <div class="case-body">${EG.tmpl(cfg.caseBody(c))}</div>
         <div class="decisions" id="decisions">${decisions}</div>
         <div id="feedbackSlot"></div>
       </section>
@@ -237,12 +312,15 @@
     const last = run.index === cfg.cases.length - 1;
     const deltaStr = (delta >= 0 ? "+" : "") + delta + " trust";
 
+    const lawKey = fb.cite && (fb.cite.law || cfg.law);
+    const legal = lawKey ? renderLegalBasis(lawKey) : "";
     const node = EG.el(`
       <div class="feedback ${ok ? "correct" : "wrong"}">
-        <h3>${ok ? "&#10003; " : "&#10007; "}${fb.verdict}
+        <h3>${ok ? "&#10003; " : "&#10007; "}${EG.tmpl(fb.verdict)}
           <span class="muted" style="font-weight:400;float:right">${deltaStr}</span></h3>
-        <p style="margin:.3rem 0">${fb.detail}</p>
-        ${fb.cite ? `<div class="cite"><span class="cite-tag">${fb.cite.tag}:</span> ${fb.cite.body}</div>` : ""}
+        <p style="margin:.3rem 0">${EG.tmpl(fb.detail)}</p>
+        ${fb.cite ? `<div class="cite"><span class="cite-tag">${EG.tmpl(fb.cite.tag)}:</span> ${EG.tmpl(fb.cite.body)}</div>` : ""}
+        ${legal}
         <div class="next-row">
           <button class="btn btn-primary" id="nextBtn">${last ? "Finish &rarr; After-action review" : "Next &rarr;"}</button>
         </div>
@@ -285,15 +363,15 @@
       const lbl = cfg.actLabel || {};
       const ch = lbl[r.chosen] || r.chosen;
       const co = lbl[r.correct] || r.correct;
-      return `<li><strong>${r.name}</strong> (${r.id}): you chose <em>${ch}</em>; defensible action was <em>${co}</em>.</li>`;
+      return `<li><strong>${EG.tmpl(r.name)}</strong> (${r.id}): you chose <em>${ch}</em>; defensible action was <em>${co}</em>.</li>`;
     }).join("");
 
-    const lessons = (cfg.lessons || []).map((l) => `<li>${l}</li>`).join("");
+    const lessons = (cfg.lessons || []).map((l) => `<li>${EG.tmpl(l)}</li>`).join("");
     const nextMod = nextReadyAfter(cfg.id);
 
     const view = EG.el(`
       <section class="card">
-        <div class="kicker">After-Action Review &mdash; ${cfg.label}</div>
+        <div class="kicker">After-Action Review &mdash; ${EG.tmpl(cfg.label)}</div>
         <h1>${cfg.aarTitle || "Batch processed"}</h1>
         <div style="display:flex;align-items:baseline;gap:1rem;flex-wrap:wrap">
           <div class="aar-score">${pct}%</div>
@@ -309,7 +387,7 @@
         <div class="start-actions">
           <button class="btn btn-primary" id="againBtn">Run a fresh batch</button>
           <button class="btn btn-ghost" id="hubBtn">&larr; Office overview</button>
-          ${nextMod ? `<button class="btn btn-ghost" id="nextModBtn">Next: ${nextMod.title} &rarr;</button>` : ""}
+          ${nextMod ? `<button class="btn btn-ghost" id="nextModBtn">Next: ${EG.tmpl(nextMod.title)} &rarr;</button>` : ""}
         </div>
       </section>
     `);

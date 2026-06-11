@@ -62,6 +62,7 @@
 
   const cfg = {
     cases: cases,
+    law: "ballot_access",
     id: "petition",
     label: "Candidate Qualification",
     icon: "&#9999;", // pencil / petition
@@ -135,7 +136,7 @@
       let verdict, detail, cite;
       if (!c.eligible) {
         detail = "Eligibility is the threshold question and it is not curable — no petition, fee, or paperwork can fix a constitutional disqualification. However strong the filing looks, the candidate cannot appear on the ballot. Disqualify with the specific eligibility ground stated.";
-        cite = { tag: "Eligibility", body: "A candidate who fails a constitutional eligibility requirement cannot be placed on the ballot." };
+        cite = { tag: "Eligibility", body: "A candidate who fails a constitutional eligibility requirement cannot be placed on the ballot.", law: "candidate_eligibility" };
       } else if (!c.onTime) {
         detail = "The packet was filed after the candidate filing deadline. Like a late ballot, a late filing has no cure. Disqualify and record the filing timestamp.";
         cite = { tag: "Filing deadline", body: "Filings received after the deadline are not curable." };

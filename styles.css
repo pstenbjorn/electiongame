@@ -330,6 +330,40 @@ p { line-height: 1.55; }
 /* decisions can wrap to 2 across on small screens */
 .decisions .btn { flex: 1; min-width: 150px; }
 
+/* ---------- Legal basis block ---------- */
+.legal-basis {
+  margin-top: 0.85rem;
+  border-top: 1px solid var(--paper-line);
+  padding-top: 0.7rem;
+  font-family: "Helvetica Neue", Arial, sans-serif;
+}
+.lb-head {
+  font-size: 0.66rem; text-transform: uppercase; letter-spacing: 1px;
+  color: var(--muted); font-weight: bold; margin-bottom: 0.45rem;
+}
+.auth-list { list-style: none; margin: 0; padding: 0; }
+.auth { margin-bottom: 0.5rem; line-height: 1.4; }
+.auth-lvl {
+  display: inline-block; font-size: 0.6rem; font-weight: bold; letter-spacing: 0.6px;
+  text-transform: uppercase; padding: 1px 6px; border-radius: 3px; margin-right: 0.4rem;
+  vertical-align: middle;
+}
+.lvl-fed { background: #e7eef6; color: var(--navy); }
+.lvl-state { background: #f2ece0; color: var(--amber); }
+.auth-cite { font-size: 0.86rem; font-weight: 600; color: var(--navy-deep); text-decoration: none; border-bottom: 1px dotted var(--navy); }
+.auth-cite:hover { color: var(--accent); border-bottom-color: var(--accent); }
+.cfg-flag {
+  font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.5px;
+  background: #f6e6e6; color: var(--red); padding: 1px 5px; border-radius: 3px; margin-left: 0.3rem;
+}
+.auth-note { font-size: 0.8rem; color: var(--ink); margin-top: 1px; }
+.lb-nav {
+  display: inline-block; margin-top: 0.35rem; font-size: 0.82rem; font-weight: 600;
+  color: var(--navy); text-decoration: none;
+}
+.lb-nav:hover { color: var(--accent); }
+.lb-nav em { font-style: italic; font-weight: 400; }
+
 @media (max-width: 560px) {
   .sig-compare { grid-template-columns: 1fr; }
   .meters { gap: 0.75rem; }

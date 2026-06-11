@@ -51,10 +51,61 @@ python3 -m http.server 8000
 |------|------|
 | `index.html` | App shell, top bar (Public Trust meter), footer, script order |
 | `styles.css` | Civic "paper + navy" visual theme |
-| `engine.js` | Shared framework: hub, navigation, scoring, after-action, `makeAdjudication` |
+| `engine.js` | Shared framework: hub, navigation, scoring, after-action, config/citations, `makeAdjudication` |
 | `signature.js` | Deterministic seeded SVG signature generator |
-| `app.js` | Bootstrap — wires the brand link and opens the hub |
+| `jurisdiction.config.json` | **Jurisdiction config** — branding, parameters, and the legal-citations library (edit this) |
+| `config.js` | Generated `file://` fallback copy of the config (`node build-config.js`) |
+| `build-config.js` | Regenerates `config.js` from the JSON |
+| `app.js` | Bootstrap — loads config, applies branding, opens the hub |
 | `mod_*.js` | One file per department (data + rules), self-registering |
+
+## Customizing for a jurisdiction
+
+Everything jurisdiction-specific lives in **`jurisdiction.config.json`**:
+
+- **`jurisdiction`** — county/state names, office and director titles, the seal glyph. These flow into the header, hub, intros, and feedback via `{county}`, `{state}`, `{director}`, etc. tokens.
+- **`parameters`** — the numbers and dates the modules display: mail-ballot receipt & cure deadlines, the campaign-finance late-fine schedule (`perDay`, `cap`, `currency`), the registration confirmation-wait text.
+- **`citations`** — the legal-authorities library keyed by topic (see below).
+
+Two ways the config is loaded:
+
+1. **Served over HTTP** (`python3 -m http.server`): the JSON is fetched live, so edits take effect on refresh — no rebuild.
+2. **Opened as a file (`file://`)**: browsers block `fetch()` of local JSON, so the app falls back to the embedded copy in `config.js`. After editing the JSON, regenerate it:
+
+   ```bash
+   node build-config.js
+   ```
+
+To retarget the whole simulation to, say, Maricopa County, AZ: edit the `jurisdiction` block, adjust `parameters`, fill in the state `citations` (below), and you're done — no code changes.
+
+## Legal references
+
+Every decision's feedback ends with a **Legal basis** block drawn from the
+`citations` library. Each topic lists its governing **authorities**, tagged
+`Federal` or `State`:
+
+- **Federal authorities are pre-filled and linked** to Cornell's Legal
+  Information Institute — e.g. NVRA list-maintenance (52 U.S.C. § 20507), HAVA
+  provisional ballots (52 U.S.C. § 21082), ADA Title II (42 U.S.C. § 12132), the
+  Voting Accessibility for the Elderly and Handicapped Act (52 U.S.C. § 20102),
+  VRA § 203 language access (52 U.S.C. § 10503), UOCAVA (52 U.S.C. § 20302), and
+  records retention (52 U.S.C. § 20701).
+- **State authorities are deliberately left as `configurable` placeholders.**
+  Signature-cure windows, wrong-precinct counting, petition thresholds, the fine
+  schedule, canvass deadlines, etc. vary by state, so each is a fill-in-the-blank
+  pointing you to the right citation.
+
+The resource for finding those state provisions is the **[Election Law
+Navigator](https://electionlawnavigator.org/)** (the Election Law Program —
+National Center for State Courts & William & Mary Law School): 30,000+ statutes,
+regulations, and advisory opinions across all 50 states, organized by 100+ topic
+tags. Each Legal-basis block links to it with the relevant topic, so filling in a
+state citation is: open the Navigator → pick your state and the named topic →
+copy the section into the config.
+
+> Note: the federal citations are accurate authorities, but this is a **training
+> simulation, not legal advice**. Confirm specifics against current law for your
+> jurisdiction before relying on them operationally.
 
 ### Architecture in one paragraph
 
@@ -90,7 +141,9 @@ so authored cases stay consistent with the stated rules. No engine changes neede
 
 Copy any `mod_*.js`, change the `cfg` (id, label, intro, rules, decisions,
 `correctAction`, `caseBody`, `feedback`, `penalties`, `lessons`), and add a
-`<script>` tag in `index.html`. It appears on the hub automatically.
+`<script>` tag in `index.html`. It appears on the hub automatically. Set
+`cfg.law` to a citation key from the config (or add `law` to an individual
+`cite` to override per-decision) so the Legal-basis block resolves.
 
 ## Design principles
 

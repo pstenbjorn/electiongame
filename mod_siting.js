@@ -46,6 +46,7 @@
 
   const cfg = {
     cases: cases,
+    law: "siting_access",
     id: "siting",
     label: "Polling Place Siting",
     icon: "&#9873;", // flag / location

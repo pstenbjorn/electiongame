@@ -2,8 +2,9 @@
 (function () {
   "use strict";
 
-  const BALLOT_DEADLINE = "8:00 PM, Election Day (Nov 5)";
-  const CURE_DEADLINE = "5:00 PM, Nov 12 (7 days after Election Day)";
+  // Sourced from the jurisdiction config at render time (after config loads).
+  const BALLOT_DEADLINE = () => EG.jx("parameters.vbm.ballotDeadline", "8:00 PM, Election Day");
+  const CURE_DEADLINE = () => EG.jx("parameters.vbm.cureDeadline", "the cure deadline");
 
   const cases = [
     { id: "VBM-1042", voterName: "Dana R. Whitfield", sigSeed: "dana-whitfield-7781",
@@ -62,7 +63,7 @@
     caseKicker: "Envelope",
     beginLabel: "Begin processing",
     aarTitle: "Batch processed",
-    keyDates: `<strong>Key dates.</strong> Receipt deadline: ${BALLOT_DEADLINE}. Cure deadline: ${CURE_DEADLINE}.`,
+    keyDates: () => `<strong>Key dates.</strong> Receipt deadline: ${BALLOT_DEADLINE()}. Cure deadline: ${CURE_DEADLINE()}.`,
     intro: [
       "Your team is processing the affidavit envelopes of returned mail ballots before they can be opened and counted.",
       "For each envelope, compare the signature against the one on file, confirm the ballot arrived on time, and decide how to handle it. The goal is not speed — it is a defensible decision on every envelope.",
@@ -94,7 +95,7 @@
           <div class="meta-grid">
             <div class="meta-item"><span class="meta-k">Received</span><span class="meta-v">${c.received}</span></div>
             <div class="meta-item"><span class="meta-k">Postmark</span><span class="meta-v">${c.postmark}</span></div>
-            <div class="meta-item"><span class="meta-k">Receipt deadline</span><span class="meta-v">${BALLOT_DEADLINE}</span></div>
+            <div class="meta-item"><span class="meta-k">Receipt deadline</span><span class="meta-v">${BALLOT_DEADLINE()}</span></div>
             <div class="meta-item"><span class="meta-k">Timeliness</span><span class="meta-v flag ${timelyClass}">${timelyText}</span></div>
           </div>
           ${c.timelyNote ? `<p class="muted" style="margin:-.4rem 0 .6rem;font-size:.85rem">${c.timelyNote}</p>` : ""}
@@ -126,16 +127,16 @@
         } else {
           detail = "The signature was fine, but the ballot arrived after the deadline with no qualifying postmark. There is no cure for lateness. Reject and record the receipt date and postmark.";
         }
-        cite = { tag: "Receipt deadline", body: "Mail ballots must be received by " + BALLOT_DEADLINE + ". Late ballots are not curable." };
+        cite = { tag: "Receipt deadline", body: "Mail ballots must be received by " + BALLOT_DEADLINE() + ". Late ballots are not curable.", law: "vbm_deadline" };
       } else if (c.signatureStatus === "missing") {
         detail = "The affidavit envelope is unsigned. A missing signature is curable — notify the voter and give them until the cure deadline to sign. Send a cure notice; do not reject and do not open the ballot yet.";
-        cite = { tag: "Notice & cure", body: "Voter may cure a missing signature through " + CURE_DEADLINE + "." };
+        cite = { tag: "Notice & cure", body: "Voter may cure a missing signature through " + CURE_DEADLINE() + ".", law: "vbm_cure" };
       } else if (c.signatureStatus === "mismatch") {
         detail = "The envelope signature shows a genuine discrepancy. You are not a forensic examiner, and the remedy is not rejection — it is notice. Send a cure notice so the voter can verify identity by the cure deadline.";
-        cite = { tag: "Notice & cure", body: "A signature discrepancy is curable through " + CURE_DEADLINE + ". Reject only if uncured." };
+        cite = { tag: "Notice & cure", body: "A signature discrepancy is curable through " + CURE_DEADLINE() + ". Reject only if uncured.", law: "vbm_cure" };
       } else {
         detail = "Signed, signature reasonably corresponds to the one on file, received on time. Ordinary variation is expected — you confirm the same hand, not a perfect copy. Accept for counting.";
-        cite = { tag: "Verified", body: "Signature corresponds; received by " + BALLOT_DEADLINE + "." };
+        cite = { tag: "Verified", body: "Signature corresponds; received by " + BALLOT_DEADLINE() + ".", law: "vbm_cure" };
       }
       if (ctx.ok) verdict = "Defensible decision.";
       else if ((ctx.correct === "cure" || ctx.correct === "accept") && ctx.chosen === "reject") verdict = "You disenfranchised a voter who had a remedy.";

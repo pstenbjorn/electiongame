@@ -87,6 +87,7 @@
 
   const cfg = {
     cases: cases,
+    law: "ballot_la",
     id: "ballot",
     label: "Ballot Design & L&A Testing",
     icon: "&#9745;", // ballot box with check

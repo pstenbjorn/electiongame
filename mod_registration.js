@@ -8,7 +8,7 @@
   //   cancel: deceased_verified | voter_request | confirmed_move_out
   const cases = [
     { id: "VR-01", voter: "Carmen L. Delacroix", trigger: "USPS move flag — moved across town",
-      situation: "injur_move", source: "National Change of Address: new address is within Clearwater County.",
+      situation: "injur_move", source: "National Change of Address: new address is within {county}.",
       note: "Voter moved within the jurisdiction and remains eligible here." },
     { id: "VR-02", voter: "Andre P. Mwangi", trigger: "New registration application",
       situation: "new_valid", source: "Complete, signed, timely application; identity and eligibility verified.",
@@ -55,6 +55,7 @@
 
   const cfg = {
     cases: cases,
+    law: "reg_list_maintenance",
     id: "registration",
     label: "Voter Registration Notifications",
     icon: "&#9998;", // pencil
@@ -108,7 +109,7 @@
             ? "the voter's own signed cancellation request"
             : "a completed confirmation process confirming a move out of the jurisdiction";
         detail = `Removal is justified here because there is real proof: ${why}. This is exactly the narrow set of grounds on which you may cancel. Cancel the registration and document the basis.`;
-        cite = { tag: "Lawful removal", body: "Cancellation is permitted on verified death, the voter's request, or a confirmed move — and only then." };
+        cite = { tag: "Lawful removal", body: "Cancellation is permitted on verified death, the voter's request, or a confirmed move — and only then.", law: "reg_removal" };
       } else if (correct === "notice") {
         const why = c.situation === "undeliverable" ? "a returned piece of mail" : "a third-party move flag";
         detail = `You have ${why} — a lead, not proof. The voter may have moved, or the mail may simply have bounced. Send a forwardable address-confirmation notice, mark the record inactive, and start the statutory waiting period. Cancelling now risks purging someone who never moved.`;
