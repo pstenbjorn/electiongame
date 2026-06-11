@@ -32,6 +32,23 @@ meter rewards defensibility and punishes the two cardinal errors — disenfranch
 an eligible voter and advancing an invalid one — and each batch ends in an
 **after-action review** with tallies and the lessons it trains.
 
+## Two ways to play
+
+The hub opens with two entry points:
+
+- **Career mode** — run one full election cycle, candidate filing through
+  Certification Day, across all eight desks on a calendar. **Public Trust carries
+  the whole way** (start 85). Each day is an **in-tray of tickets** worked under a
+  limited **staff-hours** budget — *"Consult the code"* spends an hour to reveal
+  the governing law *before* you rule, so you triage which calls you're unsure of.
+  Slip and you draw **escalations** (a lawsuit that costs you staff hours, an
+  emergency board review); string defensible rulings together for a **streak** and
+  a CERTIFIED stamp. The cycle ends on **Certification Day** with a credential —
+  *Distinguished → Certified → Provisional → Decertified* — and badges. Best
+  result is saved.
+- **Practice by department** — drill any single desk as a full batch with its own
+  after-action review (trust resets each time). Good for focused study.
+
 ## Run it
 
 No build step, no dependencies. Either:

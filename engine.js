@@ -142,6 +142,12 @@
     saveProgress(p);
   };
   EG.getProgress = loadProgress;
+  EG.saveCareer = function (result) {
+    const p = loadProgress();
+    const prev = p.__career__;
+    if (!prev || result.trust >= prev.trust) p.__career__ = result;
+    saveProgress(p);
+  };
 
   // ---- Module registry & hub ----
   const modules = [];
@@ -184,17 +190,44 @@
           <h1>The election cycle, one desk at a time</h1>
           <p class="lead">Each department hands you a queue of real decisions. Choose the action you could defend
           to a court or an auditor — and document why. You are scored on the integrity of the process, never on who wins.</p>
-          <p class="muted">${readyCount} of ${modules.length} departments open. Work them in any order.</p>
+          <p class="muted">${readyCount} of ${modules.length} departments open.</p>
         </div>
+        ${EG.career ? careerBannerHTML() : ""}
+        <div class="practice-head"><h2>Practice by department</h2>
+          <span class="muted">Drill any single desk — full batch, trust resets each time.</span></div>
         <div class="dept-grid">${cards}</div>
       </section>
     `);
     EG.mount(view);
+    const careerBtn = view.querySelector("#careerStartBtn");
+    if (careerBtn) careerBtn.addEventListener("click", () => EG.career.start());
     view.querySelectorAll(".dept-card").forEach(function (b) {
       if (b.disabled) return;
       b.addEventListener("click", () => EG.launch(b.dataset.id));
     });
   };
+
+  function careerBannerHTML() {
+    const p = loadProgress();
+    const best = p.__career__;
+    const bestLine = best
+      ? `<span class="career-best">Best: ${best.credential} &middot; Trust ${best.trust}</span>`
+      : `<span class="career-best">Not yet attempted</span>`;
+    return `
+      <div class="card career-banner">
+        <div class="career-banner-body">
+          <div class="kicker">Career Mode</div>
+          <h2>Run a full election cycle</h2>
+          <p>Take one election from candidate filing to Certification Day across all eight desks — on the
+          calendar, against the clock, with limited staff and a Public Trust score that carries the whole way.
+          Earn your credential.</p>
+          ${bestLine}
+        </div>
+        <div class="career-banner-cta">
+          <button class="btn btn-primary" id="careerStartBtn">Begin the cycle &rarr;</button>
+        </div>
+      </div>`;
+  }
 
   EG.launch = function (id) {
     const mod = modules.find((m) => m.id === id);
@@ -235,10 +268,16 @@
       summary: cfg.summary,
       icon: cfg.icon,
       status: cfg.status || "ready",
+      cfg: cfg, // exposed so the Career layer can reuse a module's cases/rules
       start: function () { runIntro(cfg); },
     };
     return mod;
   };
+
+  // Exposed for the Career layer (career.js) to reuse the per-case primitives.
+  EG.renderLegalBasis = renderLegalBasis;
+  EG.toneClass = toneClass;
+  EG.moduleById = function (id) { return modules.find((m) => m.id === id); };
 
   function runIntro(cfg) {
     EG.trust.reset();

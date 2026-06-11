@@ -53,6 +53,7 @@
 
   const cfg = {
     cases: cases,
+    law: "vbm_cure",
     id: "vbm",
     label: "Vote-by-Mail Processing",
     icon: "&#9993;", // envelope
