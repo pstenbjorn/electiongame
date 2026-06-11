@@ -1,0 +1,127 @@
+/* config.js — GENERATED from jurisdiction.config.json by build-config.js. Do not edit by hand.
+ * This embedded copy is the fallback used when the app runs from file:// (where
+ * fetch() of the JSON is blocked). When served over HTTP, the JSON is read live
+ * and overrides this default. Regenerate with: node build-config.js */
+window.JURISDICTION_DEFAULT = {
+  "schemaVersion": 1,
+  "_comment": "Jurisdiction configuration for the Election Administrator Trainer. Edit this file to retarget the simulation to any jurisdiction, then regenerate config.js (see README) or serve the app over HTTP so this file is read directly. State-level citations are deliberately left as placeholders for you to fill with your own code sections; the Election Law Navigator (https://electionlawnavigator.org/) is the resource for locating them. Federal authorities are pre-filled and linked.",
+
+  "jurisdiction": {
+    "county": "Clearwater County",
+    "state": "State of Columbia",
+    "stateAbbr": "CB",
+    "office": "Office of the Election Director",
+    "directorTitle": "Election Director",
+    "seal": "★"
+  },
+
+  "resources": {
+    "navigatorName": "Election Law Navigator",
+    "navigatorUrl": "https://electionlawnavigator.org/",
+    "navigatorNote": "Election Law Program (National Center for State Courts & William & Mary Law School) — 30,000+ statutes, regulations, and advisory opinions across all 50 states, organized by 100+ topic tags."
+  },
+
+  "parameters": {
+    "vbm": {
+      "ballotDeadline": "8:00 PM, Election Day (Nov 5)",
+      "cureDeadline": "5:00 PM, Nov 12 (7 days after Election Day)"
+    },
+    "finance": {
+      "currency": "$",
+      "perDay": 50,
+      "cap": 1000
+    },
+    "registration": {
+      "confirmationWaitText": "two consecutive federal general elections"
+    }
+  },
+
+  "citations": {
+    "vbm_cure": {
+      "navigatorTopic": "Absentee / Mail-In Voting — Signature Verification & Cure",
+      "authorities": [
+        { "level": "Federal", "cite": "U.S. Const. amend. XIV (Due Process)", "note": "Courts have held that rejecting a mail ballot for a signature defect without notice and an opportunity to cure raises due-process concerns.", "url": "https://www.law.cornell.edu/constitution/amendmentxiv" },
+        { "level": "State", "cite": "{state} — mail-ballot signature verification & cure statute", "note": "Cure windows, who may cure, and acceptable proofs are set by state law. Fill in your citation.", "configurable": true }
+      ]
+    },
+    "vbm_deadline": {
+      "navigatorTopic": "Absentee / Mail-In Voting — Receipt Deadlines & Postmark Rules",
+      "authorities": [
+        { "level": "Federal", "cite": "UOCAVA, 52 U.S.C. § 20302", "note": "Requires transmission of ballots to military and overseas voters ≥ 45 days before a federal election; some receipt protections flow from it.", "url": "https://www.law.cornell.edu/uscode/text/52/20302" },
+        { "level": "State", "cite": "{state} — mail-ballot receipt deadline & postmark provision", "note": "Whether a postmark-by-Election-Day ballot is counted, and any grace period, is state law. Fill in your citation.", "configurable": true }
+      ]
+    },
+    "provisional": {
+      "navigatorTopic": "Provisional Ballots",
+      "authorities": [
+        { "level": "Federal", "cite": "HAVA § 302, 52 U.S.C. § 21082", "note": "Guarantees the right to cast a provisional ballot and requires it be counted if the voter is determined eligible under state law.", "url": "https://www.law.cornell.edu/uscode/text/52/21082" },
+        { "level": "State", "cite": "{state} — provisional ballot eligibility & wrong-precinct counting", "note": "Whether wrong-precinct ballots count (in full or partially) is determined by state law. Fill in your citation.", "configurable": true }
+      ]
+    },
+    "ballot_access": {
+      "navigatorTopic": "Ballot Access — Nominating Petitions & Filing",
+      "authorities": [
+        { "level": "Federal", "cite": "Anderson–Burdick framework (U.S. Const. amends. I, XIV)", "note": "Ballot-access burdens are weighed against the state's regulatory interests; requirements must not be unduly burdensome.", "url": "https://www.law.cornell.edu/constitution/amendmentxiv" },
+        { "level": "State", "cite": "{state} — nominating petition signature, fee & filing-deadline requirements", "note": "Signature thresholds, fees, validation, and cure periods are set by state law. Fill in your citation.", "configurable": true }
+      ]
+    },
+    "candidate_eligibility": {
+      "navigatorTopic": "Candidate Qualifications & Eligibility",
+      "authorities": [
+        { "level": "State", "cite": "{state} constitution & code — qualifications for the office (age, residency, term limits)", "note": "Constitutional/statutory eligibility is not curable. Fill in your citation.", "configurable": true }
+      ]
+    },
+    "campaign_finance": {
+      "navigatorTopic": "Campaign Finance — Disclosure & Penalties",
+      "authorities": [
+        { "level": "Federal", "cite": "FECA disclosure, 52 U.S.C. § 30104", "note": "Federal periodic disclosure reporting (applies to federal candidates/committees; state & local committees are governed by state law).", "url": "https://www.law.cornell.edu/uscode/text/52/30104" },
+        { "level": "State", "cite": "{state} — campaign disclosure reporting, contribution limits & late-filing penalty schedule", "note": "Reporting deadlines, limits, and the (formulaic) fine schedule are state law, usually administered by a state ethics/PDC agency. Fill in your citation.", "configurable": true }
+      ]
+    },
+    "siting_access": {
+      "navigatorTopic": "Polling Places — Accessibility & Location",
+      "authorities": [
+        { "level": "Federal", "cite": "ADA Title II, 42 U.S.C. § 12132", "note": "Prohibits disability discrimination by public entities; voting must be accessible. See DOJ ADA Checklist for Polling Places.", "url": "https://www.law.cornell.edu/uscode/text/42/12132" },
+        { "level": "Federal", "cite": "Voting Accessibility for the Elderly and Handicapped Act, 52 U.S.C. § 20102", "note": "Requires accessible polling places for federal elections, or an accessible alternative means of voting.", "url": "https://www.law.cornell.edu/uscode/text/52/20102" },
+        { "level": "Federal", "cite": "HAVA § 301, 52 U.S.C. § 21081", "note": "Voting-system accessibility standards (at least one accessible device per polling place).", "url": "https://www.law.cornell.edu/uscode/text/52/21081" },
+        { "level": "State", "cite": "{state} — polling-place standards & capacity/allocation rules", "note": "Site standards and voter-per-precinct allocation are state law. Fill in your citation.", "configurable": true }
+      ]
+    },
+    "language_access": {
+      "navigatorTopic": "Language Access — Bilingual Election Materials",
+      "authorities": [
+        { "level": "Federal", "cite": "Voting Rights Act § 203, 52 U.S.C. § 10503", "note": "Requires bilingual election materials in covered jurisdictions.", "url": "https://www.law.cornell.edu/uscode/text/52/10503" },
+        { "level": "Federal", "cite": "Voting Rights Act § 208, 52 U.S.C. § 10508", "note": "A voter who needs assistance may be helped by a person of their choice.", "url": "https://www.law.cornell.edu/uscode/text/52/10508" }
+      ]
+    },
+    "ballot_la": {
+      "navigatorTopic": "Voting Technology — Ballots, Testing & Certification",
+      "authorities": [
+        { "level": "Federal", "cite": "HAVA § 301, 52 U.S.C. § 21081", "note": "Voting-system standards: error-rate limits, audit capacity, and a permanent paper record — the basis for logic & accuracy testing.", "url": "https://www.law.cornell.edu/uscode/text/52/21081" },
+        { "level": "State", "cite": "{state} — ballot layout/rotation rules & required L&A (logic-and-accuracy) testing", "note": "Pre-election testing requirements and ballot-order rules are set by state law. Fill in your citation.", "configurable": true }
+      ]
+    },
+    "reg_list_maintenance": {
+      "navigatorTopic": "Voter Registration — List Maintenance",
+      "authorities": [
+        { "level": "Federal", "cite": "NVRA, 52 U.S.C. § 20507(b),(d)", "note": "List maintenance must be uniform and nondiscriminatory; a registrant may NOT be removed solely for failing to vote, and address-based removal requires a forwardable confirmation notice plus a waiting period of {regWait}.", "url": "https://www.law.cornell.edu/uscode/text/52/20507" },
+        { "level": "Federal", "cite": "HAVA § 303, 52 U.S.C. § 21083", "note": "Statewide computerized voter-registration database and list-maintenance coordination.", "url": "https://www.law.cornell.edu/uscode/text/52/21083" },
+        { "level": "State", "cite": "{state} — registration list-maintenance & confirmation-notice procedure", "note": "The specific notice and inactive-status process is implemented in state law. Fill in your citation.", "configurable": true }
+      ]
+    },
+    "reg_removal": {
+      "navigatorTopic": "Voter Registration — Cancellation / Removal Grounds",
+      "authorities": [
+        { "level": "Federal", "cite": "NVRA, 52 U.S.C. § 20507(a)(3)–(4)", "note": "Permits removal on the voter's request, death, a disqualifying criminal conviction, mental incapacity (as state law provides), or a confirmed change of residence — and only on those grounds.", "url": "https://www.law.cornell.edu/uscode/text/52/20507" },
+        { "level": "State", "cite": "{state} — grounds & process for cancelling a registration", "note": "Death-record matching, eligibility restoration, and conviction rules are state-specific. Fill in your citation.", "configurable": true }
+      ]
+    },
+    "canvass": {
+      "navigatorTopic": "Canvassing, Certification & Recounts",
+      "authorities": [
+        { "level": "Federal", "cite": "Records retention, 52 U.S.C. § 20701", "note": "Federal-election records (including the materials behind a canvass) must be retained for 22 months.", "url": "https://www.law.cornell.edu/uscode/text/52/20701" },
+        { "level": "State", "cite": "{state} — canvass, reconciliation & certification deadlines", "note": "The reconciliation standard, canvass timeline, and certification deadline are set by state law. Fill in your citation.", "configurable": true }
+      ]
+    }
+  }
+};

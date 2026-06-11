@@ -9,10 +9,10 @@
 <body>
   <header class="topbar">
     <div class="brand">
-      <span class="seal" aria-hidden="true">&#9733;</span>
+      <span id="brandSeal" class="seal" aria-hidden="true">&#9733;</span>
       <div>
-        <div class="brand-title">Clearwater County</div>
-        <div class="brand-sub">Office of the Election Director</div>
+        <div id="brandTitle" class="brand-title">Clearwater County</div>
+        <div id="brandSub" class="brand-sub">Office of the Election Director</div>
       </div>
     </div>
     <div class="meters">
@@ -34,11 +34,21 @@
 
   <footer class="footer">
     <span>Training simulation &mdash; nonpartisan. Candidates and parties are abstract by design.</span>
-    <span class="module-tag">Module: Vote-by-Mail Processing</span>
+    <span id="moduleTag" class="module-tag">Module: Office Overview</span>
   </footer>
 
-  <script src="scenarios.js"></script>
+  <script src="config.js"></script>
   <script src="signature.js"></script>
+  <script src="engine.js"></script>
+  <!-- Modules self-register in this order; it sets the order on the hub. -->
+  <script src="mod_petition.js"></script>
+  <script src="mod_finance.js"></script>
+  <script src="mod_siting.js"></script>
+  <script src="mod_ballot.js"></script>
+  <script src="mod_registration.js"></script>
+  <script src="mod_vbm.js"></script>
+  <script src="mod_provisional.js"></script>
+  <script src="mod_results.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
