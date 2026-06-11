@@ -3,10 +3,10 @@
   "_comment": "Jurisdiction configuration for the Election Administrator Trainer. Edit this file to retarget the simulation to any jurisdiction, then regenerate config.js (see README) or serve the app over HTTP so this file is read directly. State-level citations are deliberately left as placeholders for you to fill with your own code sections; the Election Law Navigator (https://electionlawnavigator.org/) is the resource for locating them. Federal authorities are pre-filled and linked.",
 
   "jurisdiction": {
-    "county": "Clearwater County",
-    "state": "State of Columbia",
-    "stateAbbr": "CB",
-    "office": "Office of the Election Director",
+    "county": "Northumberland County",
+    "state": "Commonwealth of Virginia",
+    "stateAbbr": "VA",
+    "office": "General Registrar and Election Director",
     "directorTitle": "Election Director",
     "seal": "★"
   },
