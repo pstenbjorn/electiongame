@@ -7,10 +7,14 @@ it's built, and what was decided.
 
 A browser-based, **no-build** management simulation that trains **new election
 administrators** on the procedural craft of running an election. The player is
-the **Election Director** of a configurable jurisdiction (default "Clearwater
-County") and makes defensible, documented decisions. Scored on **integrity of
-the process — never on who wins**. Nonpartisan by design (candidates/parties are
-abstract).
+the **Election Director / General Registrar** of a configurable jurisdiction and
+makes defensible, documented decisions. Scored on **integrity of the process —
+never on who wins**. Nonpartisan by design (candidates/parties are abstract).
+
+**Default config is the Commonwealth of Virginia** (Arlington County) with real
+Code of Virginia (Title 24.2) citations. A blank, any-state template (federal
+cites filled, state cites left as `configurable` placeholders) lives at
+`examples/jurisdiction.generic.json`.
 
 Origin: started as a "lark" brainstorm, then built a vote-by-mail vertical slice,
 then expanded to eight departments, then added legal citations + a jurisdiction
@@ -41,6 +45,24 @@ get scored**. The two cardinal errors (disenfranchising an eligible voter;
 advancing an invalid ballot/candidate) carry the heaviest penalties and are
 tracked as `critical` in the after-action review.
 
+**Two play modes.** The hub offers (1) **Career mode** (`career.js`) and (2)
+**Practice by department** (the original per-module batches). Career wraps the
+eight desks into one election on a `TIMELINE`: persistent Public Trust (starts
+85), an **inbox** of tickets per stage worked under a **staff-hours** budget
+("Consult the code" spends an hour to reveal the legal basis before ruling),
+**escalation** events when trust dips (lawsuit cuts next-day hours; board review;
+streak praise), a CERTIFIED/CONTESTED **stamp** + streak juice per ruling, and a
+**Certification Day finale** awarding a credential (Distinguished → Certified →
+Provisional → Decertified) plus badges. Career reuses each module's primitives
+via `EG.moduleById(id).cfg`; practice mode is untouched. Best result saved to
+`localStorage` under `__career__`.
+
+**Per-module content scaffold** (added for clarity): `cfg.primer` ({what,
+matters, terms[]}) renders a "Desk briefing" on the intro; `cfg.question` is the
+standing determination prompt shown each case; `cfg.stakes` (or per-case
+`c.stakes`) renders an "At stake" line; per-case `c.background` adds scenario
+context above the facts. The engine renders these around each `caseBody`.
+
 ## Files
 
 | File | Role |
@@ -49,9 +71,11 @@ tracked as `critical` in the after-action review.
 | `styles.css` | "paper + navy" civic theme; hub cards, case file, legal-basis, tables |
 | `engine.js` | Framework: hub, nav, scoring, after-action, config/`tmpl`/citations, `makeAdjudication` |
 | `signature.js` | Deterministic seeded SVG signature generator (`SignatureArt.svg(seed, opts)`) |
-| `jurisdiction.config.json` | **Canonical config** — branding, parameters, citations library (edit this) |
+| `jurisdiction.config.json` | **Canonical config** — Virginia by default; branding, parameters, citations library (edit this) |
+| `examples/jurisdiction.generic.json` | Blank any-state template (federal cites filled, state cites placeholders) |
 | `config.js` | GENERATED `file://` fallback of the config (`node build-config.js`) |
 | `build-config.js` | Regenerates `config.js` from the JSON |
+| `career.js` | **Career / Election-Cycle mode** — timeline, inbox+staff-hours, escalation, finale |
 | `app.js` | Bootstrap |
 | `mod_petition.js` | 1. Candidate Qualification & Petition Validation (place / cure / disqualify) |
 | `mod_finance.js` | 2. Campaign Finance (accept / amend / fine — formulaic fines) |
@@ -70,9 +94,12 @@ tracked as `critical` in the after-action review.
   `{seal}`, `{navigatorName}`, `{navigatorUrl}`, `{regWait}` tokens. The engine's
   `EG.tmpl(str)` substitutes these into **all rendered strings** (incl. case data),
   so county names in cases are tokenized (`{county}`) and retarget cleanly.
-- **`parameters`** — `vbm.ballotDeadline`/`cureDeadline`, `finance.perDay`/`cap`/
-  `currency`, `registration.confirmationWaitText`. Modules read these via
-  `EG.jx("path", default)` at render time (NOT at module load — config loads async).
+- **`parameters`** — `vbm.ballotDeadline`/`cureDeadline`; `finance` penalty model
+  (`model: "perDay"` with `perDay`/`cap`, OR `model: "flat"` with `firstOffense`/
+  `repeatOffense` — Virginia uses flat, § 24.2-953.2); `registration.confirmationWaitText`.
+  Modules read these via `EG.jx("path", default)` at render time (NOT at module
+  load — config loads async). Petition signature thresholds in `mod_petition.js`
+  are set to VA values (125 local, 250 state senate; § 24.2-506).
 - **`citations`** — keyed library (12 keys). Each has `authorities[]` (level
   Federal/State, cite, note, url, optional `configurable: true`) and a
   `navigatorTopic`. Engine renders a **Legal basis** block under feedback.
@@ -101,8 +128,12 @@ parity (config.js = `window.JURISDICTION_DEFAULT = <the JSON>`).
   you document why?" Grades: Certifiable / Needs review / Contestable.
 - **One engine, many modules.** All 8 fit the "adjudicate a case" shape; this
   keeps quality consistent and authoring cheap (data + rules only).
-- **Federal cites pre-filled, state cites left blank.** Federal law is uniform;
-  state law is what each office localizes. Could flip to all-blank if desired.
+- **Default config = Virginia (Title 24.2), with real state cites filled.** The
+  generic any-state template (`examples/jurisdiction.generic.json`) keeps state
+  cites as blank `configurable` placeholders; federal cites are always pre-filled.
+- **Valid citations can require tuning mechanics.** Virginia's flat campaign-finance
+  penalty (not per-day) drove the `finance.model` config option; localizing cites
+  may mean adjusting a module's numbers (e.g., petition thresholds).
 - **Cases model common U.S. principles**, not any one state's statutes — localize
   via config. Training sim, NOT legal advice (caveat in README + PR).
 - **Persistence:** best grade per module in `localStorage` key
@@ -110,12 +141,19 @@ parity (config.js = `window.JURISDICTION_DEFAULT = <the JSON>`).
 
 ## Testing approach
 
-- Logic harness (stub DOM, no deps): loads all modules, runs `correctAction`,
-  `caseBody`, `feedback` for every case × decision; checks distributions, dup IDs.
-- Integration: `npm install jsdom --no-save` (NOT committed), drive real clicks
-  through every module to the after-action screen; assert legal-basis renders,
-  federal links present, branding applies, retarget has no `{token}` leakage.
-- Always remove `node_modules`/`package*.json` before committing.
+In-environment, no IDE needed. Dev deps are installed on demand and never committed.
+
+- **Smoke harness (committed):** `npm install jsdom --no-save && node test/smoke.mjs`.
+  Loads real `index.html` headlessly, runs the logic harness over every module,
+  drives a full practice playthrough of each desk to its after-action review and a
+  full Career cycle to the finale, checks branding + legal-basis. Exits non-zero on
+  failure. This is the one-command regression check — run it after any change.
+- **Screenshots (committed):** `npm install playwright --no-save && node test/screenshots.mjs`
+  → `test/shots/*.png` (gitignored). Uses the pre-provisioned Chromium at
+  `/opt/pw-browsers` (PLAYWRIGHT_BROWSERS_PATH; the binary *download* is network-blocked,
+  but the binary is already present). Serves over a temp HTTP server so the live
+  JSON config is used. Send PNGs to the user with SendUserFile for a visual pass.
+- Always remove `node_modules`/`package*.json` before committing (`.gitignore` covers them).
 
 ## Git / workflow state
 
@@ -126,14 +164,28 @@ parity (config.js = `window.JURISDICTION_DEFAULT = <the JSON>`).
   for this repo; `git push -u origin <branch>` works).
 - Model identity must NOT appear in commits/PRs/code (chat only).
 
-## Possible next functionality (user will brainstorm)
+## Feedback log & agreed direction (2026 review)
 
-- **Election Day incident command** — real-time triage capstone (machine down,
-  long lines, provisional dispute) under limited staff.
-- **Risk-limiting audit (RLA)** — probability mini-game triggered by close margins.
-- **Deadline-calendar wrapper** sequencing the 8 departments into one cycle.
-- Cross-cutting systems: poll-worker recruitment/training, public-records (FOIA)
-  requests, cyber/physical security, budget/grants.
-- Wire `language_access` (VRA §203) into the ballot module's bilingual check.
-- A worked example config for a specific state (fill in the state citations).
-- Difficulty tuning / more gray-area judgment cases (pending user smoke tests).
+User feedback after smoke-testing, and what was done / planned:
+1. **VA citations** — DONE: default config retargeted to Virginia (Title 24.2),
+   real state cites + law.lis links; `finance.model` flat penalty added.
+2. **More structure** — DONE: `primer`/`question`/`stakes`/`background` scaffold
+   across modules; results cases given per-case backgrounds.
+3. **Look & feel** — DONE (baseline): "Visual refresh v2" layer in `styles.css`
+   (letterhead seal, refined palette/typography, cards, buttons, primer/ask UI).
+   User may iterate via **Claude Design**; integrate its output on top of v2.
+4. **More game, less quiz** — DONE (career.js), all three chosen directions:
+   - **Cycle / career mode** — `TIMELINE` of 8 stages → Certification Day finale,
+     persistent trust (starts 85).
+   - **Inbox + resource triage** — per-stage in-tray; staff-hours budget; "Consult
+     the code" spends an hour to reveal the law before ruling.
+   - **Escalation + progression** — trust<70 lawsuit (−1 hr next day), trust<55
+     board review, streak≥8 praise (+4); streaks, CERTIFIED/CONTESTED stamp,
+     finale credential + badges. (Consequence engine deliberately NOT built.)
+   Possible polish next: per-ticket deadlines/timers; consequence engine (earlier
+   calls resurfacing); difficulty tiers; sound. Visual still baseline v2 — Claude
+   Design pass welcome.
+
+Other backlog: Election Day incident-command capstone; RLA mini-game; wire
+`language_access` (VRA §203) into ballot bilingual check; more gray-area cases;
+worked configs for other states.

@@ -370,3 +370,272 @@ p { line-height: 1.55; }
   .meter { min-width: 120px; }
   .dept-grid { grid-template-columns: 1fr; }
 }
+
+/* =====================================================================
+   Visual refresh v2 — a more polished, public-sector "official document"
+   look. This layer extends/overrides the base theme above (cascade wins).
+   ===================================================================== */
+:root {
+  --navy: #1d3a5f;
+  --navy-deep: #122537;
+  --accent: #b38f43;
+  --accent-soft: #d8bd80;
+  --ink: #232b34;
+  --ink-soft: #3c454f;
+  --paper: #f7f4ee;
+  --paper-2: #fbf9f4;
+  --paper-line: #e3dccd;
+  --muted: #6b727b;
+  --green: #2f7d4e;
+  --amber: #b9802a;
+  --red: #ab3838;
+  --shadow: 0 1px 2px rgba(18,37,55,.06), 0 6px 20px rgba(18,37,55,.08);
+  --shadow-lift: 0 2px 4px rgba(18,37,55,.08), 0 14px 32px rgba(18,37,55,.14);
+}
+
+body {
+  background:
+    radial-gradient(1200px 500px at 50% -120px, rgba(29,58,95,.05), transparent 70%),
+    repeating-linear-gradient(0deg, transparent 0 28px, rgba(29,58,95,.022) 28px 29px),
+    #efe9dd;
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---------- Letterhead top bar ---------- */
+.topbar {
+  padding: 0.85rem 1.5rem;
+  background: linear-gradient(180deg, #21436b 0%, var(--navy-deep) 100%);
+  border-bottom: 3px solid var(--accent);
+  box-shadow: 0 2px 14px rgba(18,37,55,.22);
+}
+.brand { gap: 0.85rem; }
+.seal {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 38px; height: 38px; border-radius: 50%;
+  border: 1.5px solid var(--accent-soft);
+  box-shadow: inset 0 0 0 3px rgba(184,147,63,.18);
+  color: var(--accent-soft); font-size: 1.15rem; line-height: 1;
+  background: rgba(255,255,255,.04);
+}
+.brand-title { font-size: 1.18rem; letter-spacing: 0.2px; font-weight: 700; }
+.brand-sub { font-size: 0.74rem; opacity: 0.82; letter-spacing: 0.3px; }
+
+/* ---------- Typography ---------- */
+main { max-width: 900px; padding-top: 1.75rem; }
+h1 { font-size: 1.75rem; letter-spacing: -0.2px; line-height: 1.2; }
+h2 { font-size: 1.2rem; letter-spacing: -0.1px; margin-top: 1.4rem; }
+.kicker { font-size: 0.7rem; letter-spacing: 2.5px; color: var(--accent); }
+.lead { font-size: 1.04rem; color: var(--ink-soft); }
+
+/* ---------- Cards ---------- */
+.card {
+  border: 1px solid var(--paper-line);
+  border-radius: 10px;
+  box-shadow: var(--shadow);
+  padding: 1.6rem 1.9rem;
+  background:
+    linear-gradient(180deg, var(--paper-2), var(--paper));
+}
+.hub-hero {
+  position: relative;
+  border-top: 3px solid var(--accent);
+  padding-top: 1.5rem;
+}
+
+/* ---------- Buttons ---------- */
+.btn {
+  border-radius: 7px;
+  padding: 0.72rem 1.35rem;
+  letter-spacing: 0.2px;
+  box-shadow: 0 1px 2px rgba(18,37,55,.12);
+  transition: transform .08s ease, box-shadow .15s ease, filter .15s ease;
+}
+.btn:hover { box-shadow: 0 3px 10px rgba(18,37,55,.18); }
+.btn-primary { background: linear-gradient(180deg, #234a76, var(--navy)); }
+.btn-ghost { background: transparent; border: 1px solid #c9cdd3; color: var(--navy); box-shadow: none; }
+.btn-accept { background: linear-gradient(180deg, #36895a, var(--green)); }
+.btn-cure   { background: linear-gradient(180deg, #c8923a, var(--amber)); }
+.btn-reject { background: linear-gradient(180deg, #bf4444, var(--red)); }
+.btn-sub { letter-spacing: 0; }
+
+/* ---------- Hub cards ---------- */
+.dept-card {
+  border-radius: 10px;
+  padding: 1.15rem 1.25rem 1.1rem;
+  background: linear-gradient(180deg, var(--paper-2), var(--paper));
+  border-left: 3px solid transparent;
+}
+.dept-card:hover { box-shadow: var(--shadow-lift); border-left-color: var(--accent); border-color: var(--paper-line); border-left-color: var(--accent); }
+.dept-icon { color: var(--navy); }
+.dept-num { color: var(--accent); }
+.dept-title { font-size: 1.06rem; }
+.dept-status { border: 1px solid transparent; }
+.dept-status.ready { background: #ecf3ee; color: var(--green); border-color: #d5e7dc; }
+.dept-status.done { background: #f6efdc; color: #97712a; border-color: #ecdfbf; }
+
+/* ---------- Desk briefing (primer) ---------- */
+.primer {
+  margin: 1.1rem 0 0.4rem;
+  background: #fffdf8;
+  border: 1px solid var(--paper-line);
+  border-left: 4px solid var(--accent);
+  border-radius: 8px;
+  padding: 0.95rem 1.15rem;
+  font-family: "Helvetica Neue", Arial, sans-serif;
+}
+.primer-head {
+  font-size: 0.66rem; text-transform: uppercase; letter-spacing: 1.5px;
+  color: var(--accent); font-weight: 700; margin-bottom: 0.5rem;
+}
+.primer p { margin: 0.3rem 0; font-size: 0.9rem; line-height: 1.5; color: var(--ink-soft); }
+.primer p strong { color: var(--navy-deep); }
+.terms {
+  margin: 0.7rem 0 0; padding: 0.7rem 0 0; border-top: 1px dashed var(--paper-line);
+  display: grid; grid-template-columns: max-content 1fr; gap: 0.3rem 0.9rem;
+}
+.terms dt { font-weight: 700; color: var(--navy-deep); font-size: 0.84rem; }
+.terms dd { margin: 0; font-size: 0.84rem; color: var(--ink-soft); line-height: 1.4; }
+
+/* ---------- Per-case context + the ask ---------- */
+.case-context {
+  margin: 0.85rem 0 0.2rem;
+  padding: 0.7rem 0.95rem;
+  background: #fbf9f3;
+  border-left: 3px solid #cbd2da;
+  border-radius: 0 6px 6px 0;
+  font-size: 0.94rem; line-height: 1.5; color: var(--ink-soft);
+}
+.case-ask {
+  margin-top: 1rem;
+  border-top: 1px solid var(--paper-line);
+  padding-top: 0.85rem;
+  font-family: "Helvetica Neue", Arial, sans-serif;
+}
+.ask-label {
+  display: inline-block; font-size: 0.62rem; text-transform: uppercase; letter-spacing: 1.2px;
+  color: var(--muted); font-weight: 700; margin-right: 0.5rem; vertical-align: baseline;
+}
+.ask-q { font-size: 1.04rem; font-weight: 600; color: var(--navy-deep); line-height: 1.4; }
+.ask-stakes { margin-top: 0.45rem; font-size: 0.86rem; color: var(--ink-soft); }
+
+/* ---------- Trust meter ---------- */
+.meter-bar { height: 9px; background: rgba(255,255,255,.16); box-shadow: inset 0 1px 2px rgba(0,0,0,.18); }
+.meter-fill { box-shadow: 0 0 8px rgba(91,191,134,.35); }
+
+/* ---------- Legal basis (slightly richer) ---------- */
+.legal-basis { background: #fcfbf7; border: 1px solid var(--paper-line); border-radius: 8px; padding: 0.8rem 1rem; margin-top: 0.95rem; }
+.lb-head { color: var(--accent); }
+
+/* ---------- Footer ---------- */
+.footer { background: var(--navy-deep); border-top: 3px solid var(--accent); }
+
+/* =====================================================================
+   Career / Election-Cycle mode
+   ===================================================================== */
+.practice-head { display:flex; align-items:baseline; justify-content:space-between; gap:.75rem; margin:1.4rem 0 .7rem; flex-wrap:wrap; }
+.practice-head h2 { margin:0; font-size:1.05rem; }
+
+/* hub banner */
+.career-banner {
+  display:flex; align-items:center; justify-content:space-between; gap:1.5rem; flex-wrap:wrap;
+  margin:1.25rem 0 0.5rem;
+  background:
+    radial-gradient(700px 240px at 12% -40px, rgba(184,147,63,.12), transparent 70%),
+    linear-gradient(180deg, #1f4068, var(--navy-deep));
+  color:#f4f1ea; border:1px solid #15314c; border-left:4px solid var(--accent);
+}
+.career-banner .kicker { color: var(--accent-soft); }
+.career-banner h2 { color:#fff; margin:.15rem 0 .4rem; font-size:1.3rem; }
+.career-banner p { margin:0; color:rgba(244,241,234,.86); max-width:48ch; font-size:.94rem; }
+.career-best { display:inline-block; margin-top:.6rem; font-family:"Helvetica Neue",Arial,sans-serif;
+  font-size:.74rem; letter-spacing:.4px; color:var(--accent-soft); border:1px solid rgba(216,189,128,.4);
+  padding:2px 8px; border-radius:10px; }
+.career-banner-cta { flex-shrink:0; }
+
+/* cycle timeline (intro) */
+.timeline { list-style:none; margin:.4rem 0 0; padding:0; }
+.tl-item { display:flex; align-items:center; gap:.7rem; padding:.5rem 0; border-bottom:1px dashed var(--paper-line);
+  font-family:"Helvetica Neue",Arial,sans-serif; }
+.tl-item:last-child { border-bottom:none; }
+.tl-day { width:62px; flex-shrink:0; font-size:.72rem; font-weight:700; letter-spacing:.5px; color:var(--accent); }
+.tl-dot { width:26px; height:26px; flex-shrink:0; display:inline-flex; align-items:center; justify-content:center;
+  border-radius:50%; background:#eef2f6; color:var(--navy); font-size:.95rem; border:1px solid var(--paper-line); }
+.tl-title { flex:1; font-size:.95rem; color:var(--ink); }
+.tl-date { font-size:.8rem; color:var(--muted); }
+
+/* day header + meters */
+.day-head { display:flex; align-items:flex-start; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
+.day-head h1 { margin:.35rem 0 0; }
+.day-chip { display:inline-block; font-family:"Helvetica Neue",Arial,sans-serif; font-size:.7rem; font-weight:700;
+  letter-spacing:1px; text-transform:uppercase; color:var(--navy); background:#eef2f6; border:1px solid #dde4ea;
+  padding:3px 9px; border-radius:11px; }
+.day-meters { display:flex; gap:.6rem; }
+.dm { background:#fff; border:1px solid var(--paper-line); border-radius:8px; padding:.45rem .7rem; text-align:center;
+  font-family:"Helvetica Neue",Arial,sans-serif; min-width:74px; }
+.dm-k { display:block; font-size:.6rem; text-transform:uppercase; letter-spacing:.7px; color:var(--muted); }
+.dm-v { display:block; font-size:1.1rem; font-weight:700; color:var(--navy-deep); }
+.hours-dots { letter-spacing:2px; color:var(--accent); }
+
+/* inbox */
+.inbox-head { display:flex; justify-content:space-between; align-items:baseline; margin:1.1rem 0 .5rem;
+  font-family:"Helvetica Neue",Arial,sans-serif; font-size:.7rem; text-transform:uppercase; letter-spacing:1px; color:var(--muted); }
+.inbox { display:flex; flex-direction:column; gap:.5rem; }
+.ticket { display:flex; align-items:center; gap:.8rem; width:100%; text-align:left; cursor:pointer;
+  background:#fff; border:1px solid var(--paper-line); border-left:3px solid var(--accent); border-radius:8px;
+  padding:.7rem .9rem; font-family:inherit; color:inherit; transition:transform .08s ease, box-shadow .15s ease; }
+.ticket:hover { transform:translateX(2px); box-shadow:var(--shadow); }
+.ticket.done { border-left-color:#cdd4db; background:#faf9f6; cursor:default; opacity:.9; }
+.ticket-no { font-family:"Helvetica Neue",Arial,sans-serif; font-weight:700; color:var(--muted); font-size:.8rem; }
+.ticket-main { flex:1; display:flex; flex-direction:column; }
+.ticket-title { font-weight:600; color:var(--navy-deep); }
+.ticket-sub { font-size:.78rem; color:var(--muted); font-family:"Helvetica Neue",Arial,sans-serif; }
+.ticket-pending { font-family:"Helvetica Neue",Arial,sans-serif; font-size:.72rem; color:var(--amber); font-weight:600; }
+.ticket-stamp { font-family:"Helvetica Neue",Arial,sans-serif; font-size:.68rem; font-weight:800; letter-spacing:1px;
+  padding:2px 7px; border-radius:4px; border:1.5px solid; }
+.ticket-stamp.ok { color:var(--green); border-color:var(--green); }
+.ticket-stamp.bad { color:var(--red); border-color:var(--red); }
+.ticket-flag { font-size:.6rem; text-transform:uppercase; letter-spacing:.5px; color:var(--accent); }
+
+/* consult */
+.consult-row { display:flex; align-items:center; gap:.8rem; margin-top:1rem; flex-wrap:wrap; }
+.consult-result { margin-top:.7rem; }
+
+/* the stamp on a ruling */
+.ticket-fb { position:relative; overflow:hidden; }
+.stamp { position:absolute; top:14px; right:18px; font-family:"Helvetica Neue",Arial,sans-serif;
+  font-size:1.05rem; font-weight:900; letter-spacing:2px; padding:5px 12px; border-radius:6px;
+  border:3px solid; transform:rotate(-11deg) scale(.6); opacity:0; animation:stampIn .32s cubic-bezier(.2,1.4,.4,1) forwards; }
+.stamp.certified { color:var(--green); border-color:var(--green); }
+.stamp.contested { color:var(--red); border-color:var(--red); }
+@keyframes stampIn { to { transform:rotate(-11deg) scale(1); opacity:.92; } }
+
+/* escalation */
+.escalation { border-radius:8px; padding:.9rem 1.1rem; margin:.4rem 0 .2rem;
+  font-family:"Helvetica Neue",Arial,sans-serif; border-left:4px solid; }
+.escalation.bad { background:#fbf2f2; border-color:var(--red); }
+.escalation.good { background:#f1f8f3; border-color:var(--green); }
+.esc-head { font-weight:700; color:var(--navy-deep); margin-bottom:.25rem; }
+.escalation p { margin:.2rem 0; font-size:.9rem; line-height:1.5; color:var(--ink-soft); }
+.esc-effect { margin-top:.4rem; font-size:.8rem; font-weight:700; letter-spacing:.3px; color:var(--navy); }
+
+/* certificate finale */
+.certificate { text-align:center; border-top:4px solid var(--accent); }
+.cert-seal { width:64px; height:64px; margin:.2rem auto .6rem; border-radius:50%; display:flex; align-items:center;
+  justify-content:center; font-size:1.9rem; color:var(--accent); border:2.5px solid var(--accent-soft);
+  box-shadow:inset 0 0 0 4px rgba(184,147,63,.14); }
+.cert-title { font-size:1.7rem; margin:.2rem 0; color:var(--navy-deep); }
+.cert-note { color:var(--ink-soft); max-width:54ch; margin:.3rem auto .6rem; }
+.certificate .tally { justify-items:center; }
+.certificate h2 { margin-top:1.2rem; }
+.badges { display:flex; flex-wrap:wrap; gap:.5rem; justify-content:center; }
+.badge { font-family:"Helvetica Neue",Arial,sans-serif; font-size:.82rem; font-weight:600; color:var(--navy-deep);
+  background:#f6efdc; border:1px solid #ecdfbf; border-radius:14px; padding:5px 12px; }
+.cert-caveat { font-size:.74rem; margin-top:1rem; }
+.certificate .start-actions { justify-content:center; }
+
+@media (max-width:560px) {
+  .career-banner { flex-direction:column; align-items:flex-start; }
+  .day-meters { width:100%; }
+  .dm { flex:1; }
+}
