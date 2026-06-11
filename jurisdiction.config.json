@@ -1,13 +1,13 @@
 {
   "schemaVersion": 1,
-  "_comment": "Jurisdiction configuration for the Election Administrator Trainer. Edit this file to retarget the simulation to any jurisdiction, then regenerate config.js (see README) or serve the app over HTTP so this file is read directly. State-level citations are deliberately left as placeholders for you to fill with your own code sections; the Election Law Navigator (https://electionlawnavigator.org/) is the resource for locating them. Federal authorities are pre-filled and linked.",
+  "_comment": "Jurisdiction configuration for the Election Administrator Trainer, filled in for the Commonwealth of Virginia (Title 24.2). Change 'county' to your locality. State authorities cite the Code of Virginia with official law.lis.virginia.gov links; the Election Law Navigator (https://electionlawnavigator.org/) remains the research link. For a blank, any-state template see examples/jurisdiction.generic.json. After editing, run `node build-config.js` (file://) or serve over HTTP. Training simulation — not legal advice.",
 
   "jurisdiction": {
-    "county": "Clearwater County",
-    "state": "State of Columbia",
-    "stateAbbr": "CB",
-    "office": "Office of the Election Director",
-    "directorTitle": "Election Director",
+    "county": "Arlington County",
+    "state": "Commonwealth of Virginia",
+    "stateAbbr": "VA",
+    "office": "Office of the General Registrar & Director of Elections",
+    "directorTitle": "General Registrar",
     "seal": "★"
   },
 
@@ -19,16 +19,19 @@
 
   "parameters": {
     "vbm": {
-      "ballotDeadline": "8:00 PM, Election Day (Nov 5)",
-      "cureDeadline": "5:00 PM, Nov 12 (7 days after Election Day)"
+      "ballotDeadline": "Received by 7:00 PM on Election Day (close of polls), or postmarked on or before Election Day and received by the statutory deadline (§ 24.2-709)",
+      "cureDeadline": "the cure deadline set by Va. Code § 24.2-709.1"
     },
     "finance": {
       "currency": "$",
+      "model": "flat",
+      "firstOffense": 500,
+      "repeatOffense": 1000,
       "perDay": 50,
       "cap": 1000
     },
     "registration": {
-      "confirmationWaitText": "two consecutive federal general elections"
+      "confirmationWaitText": "two consecutive federal general elections (NVRA)"
     }
   },
 
@@ -36,42 +39,42 @@
     "vbm_cure": {
       "navigatorTopic": "Absentee / Mail-In Voting — Signature Verification & Cure",
       "authorities": [
-        { "level": "Federal", "cite": "U.S. Const. amend. XIV (Due Process)", "note": "Courts have held that rejecting a mail ballot for a signature defect without notice and an opportunity to cure raises due-process concerns.", "url": "https://www.law.cornell.edu/constitution/amendmentxiv" },
-        { "level": "State", "cite": "{state} — mail-ballot signature verification & cure statute", "note": "Cure windows, who may cure, and acceptable proofs are set by state law. Fill in your citation.", "configurable": true }
+        { "level": "Federal", "cite": "U.S. Const. amend. XIV (Due Process)", "note": "Rejecting a mail ballot for an envelope-statement defect without notice and an opportunity to cure raises due-process concerns.", "url": "https://www.law.cornell.edu/constitution/amendmentxiv" },
+        { "level": "State", "cite": "Va. Code § 24.2-709.1 (cure process); § 24.2-707 (marking & return)", "note": "If a returned ballot's voter affirmation is incomplete or a § 24.2-707 procedure was not followed in a way that would void the ballot, the general registrar must notify the voter and provide instructions to correct it so the ballot can count.", "url": "https://law.lis.virginia.gov/vacode/title24.2/chapter7/section24.2-709.1/" }
       ]
     },
     "vbm_deadline": {
       "navigatorTopic": "Absentee / Mail-In Voting — Receipt Deadlines & Postmark Rules",
       "authorities": [
-        { "level": "Federal", "cite": "UOCAVA, 52 U.S.C. § 20302", "note": "Requires transmission of ballots to military and overseas voters ≥ 45 days before a federal election; some receipt protections flow from it.", "url": "https://www.law.cornell.edu/uscode/text/52/20302" },
-        { "level": "State", "cite": "{state} — mail-ballot receipt deadline & postmark provision", "note": "Whether a postmark-by-Election-Day ballot is counted, and any grace period, is state law. Fill in your citation.", "configurable": true }
+        { "level": "Federal", "cite": "UOCAVA, 52 U.S.C. § 20302", "note": "Requires transmission of ballots to military and overseas voters ≥ 45 days before a federal election.", "url": "https://www.law.cornell.edu/uscode/text/52/20302" },
+        { "level": "State", "cite": "Va. Code § 24.2-709 (return of absentee ballots)", "note": "Sets the deadline for a mail ballot to be received (and any postmark allowance). Confirm the current rule, which has changed across recent sessions.", "url": "https://law.lis.virginia.gov/vacode/title24.2/chapter7/section24.2-709/" }
       ]
     },
     "provisional": {
       "navigatorTopic": "Provisional Ballots",
       "authorities": [
         { "level": "Federal", "cite": "HAVA § 302, 52 U.S.C. § 21082", "note": "Guarantees the right to cast a provisional ballot and requires it be counted if the voter is determined eligible under state law.", "url": "https://www.law.cornell.edu/uscode/text/52/21082" },
-        { "level": "State", "cite": "{state} — provisional ballot eligibility & wrong-precinct counting", "note": "Whether wrong-precinct ballots count (in full or partially) is determined by state law. Fill in your citation.", "configurable": true }
+        { "level": "State", "cite": "Va. Code § 24.2-653 (provisional ballots); § 24.2-653.01 (electoral board determines validity)", "note": "A voter lacking required ID, or whose registration is in question, votes provisionally; the electoral board meets after the election to determine whether each provisional voter was entitled to vote in the precinct.", "url": "https://law.lis.virginia.gov/vacode/title24.2/chapter6/section24.2-653.01/" }
       ]
     },
     "ballot_access": {
       "navigatorTopic": "Ballot Access — Nominating Petitions & Filing",
       "authorities": [
         { "level": "Federal", "cite": "Anderson–Burdick framework (U.S. Const. amends. I, XIV)", "note": "Ballot-access burdens are weighed against the state's regulatory interests; requirements must not be unduly burdensome.", "url": "https://www.law.cornell.edu/constitution/amendmentxiv" },
-        { "level": "State", "cite": "{state} — nominating petition signature, fee & filing-deadline requirements", "note": "Signature thresholds, fees, validation, and cure periods are set by state law. Fill in your citation.", "configurable": true }
+        { "level": "State", "cite": "Va. Code § 24.2-506 (petition signatures required)", "note": "Candidates for a county/city governing body or elected school board need 125 valid signatures of qualified voters (50 in an election district of 1,000 or fewer registered voters); each petition page must carry the witness affidavit. Filing deadlines are in § 24.2-507.", "url": "https://law.lis.virginia.gov/vacode/title24.2/chapter5/section24.2-506/" }
       ]
     },
     "candidate_eligibility": {
       "navigatorTopic": "Candidate Qualifications & Eligibility",
       "authorities": [
-        { "level": "State", "cite": "{state} constitution & code — qualifications for the office (age, residency, term limits)", "note": "Constitutional/statutory eligibility is not curable. Fill in your citation.", "configurable": true }
+        { "level": "State", "cite": "Va. Const. art. II, § 5 & Va. Code § 24.2-500 et seq. (qualifications to hold office)", "note": "A candidate must be a qualified voter and meet the residency/age/office requirements; constitutional ineligibility is not curable.", "url": "https://law.lis.virginia.gov/vacode/title24.2/chapter5/section24.2-500/" }
       ]
     },
     "campaign_finance": {
       "navigatorTopic": "Campaign Finance — Disclosure & Penalties",
       "authorities": [
-        { "level": "Federal", "cite": "FECA disclosure, 52 U.S.C. § 30104", "note": "Federal periodic disclosure reporting (applies to federal candidates/committees; state & local committees are governed by state law).", "url": "https://www.law.cornell.edu/uscode/text/52/30104" },
-        { "level": "State", "cite": "{state} — campaign disclosure reporting, contribution limits & late-filing penalty schedule", "note": "Reporting deadlines, limits, and the (formulaic) fine schedule are state law, usually administered by a state ethics/PDC agency. Fill in your citation.", "configurable": true }
+        { "level": "Federal", "cite": "FECA disclosure, 52 U.S.C. § 30104", "note": "Federal periodic disclosure (federal candidates/committees only; Virginia state & local committees are governed by the Code of Virginia).", "url": "https://www.law.cornell.edu/uscode/text/52/30104" },
+        { "level": "State", "cite": "Va. Code Title 24.2, Ch. 9.3 — Campaign Finance Disclosure Act of 2006; § 24.2-953.2 (late filing)", "note": "Late filing of a required report carries a civil penalty not to exceed $500; a second or subsequent violation in an election cycle is $1,000. The penalty is set by statute — flat, not a per-day accrual.", "url": "https://law.lis.virginia.gov/vacode/title24.2/chapter9.3/" }
       ]
     },
     "siting_access": {
@@ -79,14 +82,13 @@
       "authorities": [
         { "level": "Federal", "cite": "ADA Title II, 42 U.S.C. § 12132", "note": "Prohibits disability discrimination by public entities; voting must be accessible. See DOJ ADA Checklist for Polling Places.", "url": "https://www.law.cornell.edu/uscode/text/42/12132" },
         { "level": "Federal", "cite": "Voting Accessibility for the Elderly and Handicapped Act, 52 U.S.C. § 20102", "note": "Requires accessible polling places for federal elections, or an accessible alternative means of voting.", "url": "https://www.law.cornell.edu/uscode/text/52/20102" },
-        { "level": "Federal", "cite": "HAVA § 301, 52 U.S.C. § 21081", "note": "Voting-system accessibility standards (at least one accessible device per polling place).", "url": "https://www.law.cornell.edu/uscode/text/52/21081" },
-        { "level": "State", "cite": "{state} — polling-place standards & capacity/allocation rules", "note": "Site standards and voter-per-precinct allocation are state law. Fill in your citation.", "configurable": true }
+        { "level": "State", "cite": "Va. Code § 24.2-310 (requirements for polling places)", "note": "Polling places must be accessible per the Virginians with Disabilities Act (§ 51.5-1 et seq.), VAEHA, and the ADA; if a place becomes unusable or inaccessible, an accessible alternative must be provided with notice and State Board approval.", "url": "https://law.lis.virginia.gov/vacode/title24.2/chapter3/section24.2-310/" }
       ]
     },
     "language_access": {
       "navigatorTopic": "Language Access — Bilingual Election Materials",
       "authorities": [
-        { "level": "Federal", "cite": "Voting Rights Act § 203, 52 U.S.C. § 10503", "note": "Requires bilingual election materials in covered jurisdictions.", "url": "https://www.law.cornell.edu/uscode/text/52/10503" },
+        { "level": "Federal", "cite": "Voting Rights Act § 203, 52 U.S.C. § 10503", "note": "Requires bilingual election materials in covered jurisdictions (some Virginia localities are covered).", "url": "https://www.law.cornell.edu/uscode/text/52/10503" },
         { "level": "Federal", "cite": "Voting Rights Act § 208, 52 U.S.C. § 10508", "note": "A voter who needs assistance may be helped by a person of their choice.", "url": "https://www.law.cornell.edu/uscode/text/52/10508" }
       ]
     },
@@ -94,7 +96,7 @@
       "navigatorTopic": "Voting Technology — Ballots, Testing & Certification",
       "authorities": [
         { "level": "Federal", "cite": "HAVA § 301, 52 U.S.C. § 21081", "note": "Voting-system standards: error-rate limits, audit capacity, and a permanent paper record — the basis for logic & accuracy testing.", "url": "https://www.law.cornell.edu/uscode/text/52/21081" },
-        { "level": "State", "cite": "{state} — ballot layout/rotation rules & required L&A (logic-and-accuracy) testing", "note": "Pre-election testing requirements and ballot-order rules are set by state law. Fill in your citation.", "configurable": true }
+        { "level": "State", "cite": "Va. Code § 24.2-625 et seq. (voting systems; approval, testing & sealing)", "note": "Voting equipment must be certified and tested for accuracy before use; ballot form requirements are in § 24.2-613.", "url": "https://law.lis.virginia.gov/vacode/title24.2/chapter6/section24.2-613/" }
       ]
     },
     "reg_list_maintenance": {
@@ -102,21 +104,21 @@
       "authorities": [
         { "level": "Federal", "cite": "NVRA, 52 U.S.C. § 20507(b),(d)", "note": "List maintenance must be uniform and nondiscriminatory; a registrant may NOT be removed solely for failing to vote, and address-based removal requires a forwardable confirmation notice plus a waiting period of {regWait}.", "url": "https://www.law.cornell.edu/uscode/text/52/20507" },
         { "level": "Federal", "cite": "HAVA § 303, 52 U.S.C. § 21083", "note": "Statewide computerized voter-registration database and list-maintenance coordination.", "url": "https://www.law.cornell.edu/uscode/text/52/21083" },
-        { "level": "State", "cite": "{state} — registration list-maintenance & confirmation-notice procedure", "note": "The specific notice and inactive-status process is implemented in state law. Fill in your citation.", "configurable": true }
+        { "level": "State", "cite": "Va. Code §§ 24.2-427 to 24.2-431 (cancellation & list maintenance)", "note": "The Department of Elections and general registrars maintain the rolls and send address-confirmation notices; specific removal grounds are in § 24.2-427.", "url": "https://law.lis.virginia.gov/vacodefull/title24.2/chapter4/article5/" }
       ]
     },
     "reg_removal": {
       "navigatorTopic": "Voter Registration — Cancellation / Removal Grounds",
       "authorities": [
         { "level": "Federal", "cite": "NVRA, 52 U.S.C. § 20507(a)(3)–(4)", "note": "Permits removal on the voter's request, death, a disqualifying criminal conviction, mental incapacity (as state law provides), or a confirmed change of residence — and only on those grounds.", "url": "https://www.law.cornell.edu/uscode/text/52/20507" },
-        { "level": "State", "cite": "{state} — grounds & process for cancelling a registration", "note": "Death-record matching, eligibility restoration, and conviction rules are state-specific. Fill in your citation.", "configurable": true }
+        { "level": "State", "cite": "Va. Code § 24.2-427 (cancellation of registration)", "note": "The general registrar shall cancel the registration of persons known to be deceased, disqualified by felony conviction or adjudicated incapacity, non-citizens, or who have moved from the Commonwealth — or upon the voter's signed request.", "url": "https://law.lis.virginia.gov/vacode/title24.2/chapter4/section24.2-427/" }
       ]
     },
     "canvass": {
       "navigatorTopic": "Canvassing, Certification & Recounts",
       "authorities": [
         { "level": "Federal", "cite": "Records retention, 52 U.S.C. § 20701", "note": "Federal-election records (including the materials behind a canvass) must be retained for 22 months.", "url": "https://www.law.cornell.edu/uscode/text/52/20701" },
-        { "level": "State", "cite": "{state} — canvass, reconciliation & certification deadlines", "note": "The reconciliation standard, canvass timeline, and certification deadline are set by state law. Fill in your citation.", "configurable": true }
+        { "level": "State", "cite": "Va. Code § 24.2-671 (electoral board ascertains results); § 24.2-675 (abstract of votes)", "note": "Each electoral board meets at or before 5:00 PM the day after the election to open returns, reconcile, and complete the abstract of votes; the certified result is conclusive except as challenged under Chapter 8.", "url": "https://law.lis.virginia.gov/vacode/title24.2/chapter6/section24.2-671/" }
       ]
     }
   }

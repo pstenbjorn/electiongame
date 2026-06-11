@@ -68,6 +68,17 @@
       "Your team is processing the affidavit envelopes of returned mail ballots before they can be opened and counted.",
       "For each envelope, compare the signature against the one on file, confirm the ballot arrived on time, and decide how to handle it. The goal is not speed — it is a defensible decision on every envelope.",
     ],
+    primer: {
+      what: "Processes the affidavit (return) envelopes of mail ballots before they are opened — verifying the voter's identity by signature, confirming the ballot arrived in time, and running the notice-and-cure process for fixable defects.",
+      matters: "Each call decides whether a real person's vote counts. Reject a curable defect and you disenfranchise an eligible voter; accept an invalid one and you weaken the integrity of the count.",
+      terms: [
+        ["Affidavit envelope", "The outer return envelope the voter signs; the signature is compared to the one on file."],
+        ["Cure", "The voter's right to fix a missing or mismatched signature within a set deadline before the ballot is rejected."],
+        ["Postmark rule", "Whether a ballot postmarked by Election Day but arriving afterward still counts ({stateAbbr} rule per § 24.2-709)."],
+      ],
+    },
+    question: "Does this ballot count as-is, need a cure notice, or get rejected?",
+    stakes: "Wrongly rejecting disenfranchises an eligible voter; wrongly accepting advances an unverified or late ballot.",
     rulesTitle: "The four rules of the affidavit envelope",
     rules: [
       { h: "Accept", t: "Signed, signature reasonably matches the one on file, and received by the deadline → accept for counting." },

@@ -69,6 +69,17 @@
       "Accurate rolls are a balancing act. You want them current — but list maintenance is tightly rule-bound, because removing an eligible voter is among the most serious errors an office can make.",
       "Two principles to internalize. You cannot remove a voter for not voting. And a third-party signal — a move flag, a piece of returned mail — is a reason to send a confirmation notice and wait, not a reason to cancel. Removal requires real proof or the voter's own request.",
     ],
+    primer: {
+      what: "Maintains the voter rolls — processing updates and new registrations, sending address-confirmation notices, and cancelling registrations only on lawful grounds.",
+      matters: "Accurate rolls matter, but a wrongful removal turns an eligible voter away on Election Day. List maintenance is tightly rule-bound for exactly that reason.",
+      terms: [
+        ["List maintenance", "The legally constrained process of keeping the rolls current (NVRA; Va. Code §§ 24.2-427 to 24.2-431)."],
+        ["Confirmation notice", "A forwardable notice that begins a waiting period before any address-based removal."],
+        ["NCOA", "U.S. Postal Service change-of-address data — a lead that a voter may have moved, not proof that they did."],
+      ],
+    },
+    question: "Process / keep this voter active, send a confirmation notice, or cancel the registration?",
+    stakes: "Cancel without grounds and you purge an eligible voter; ignore real proof and the rolls go stale.",
     rulesTitle: "How a record is handled",
     rules: [
       { h: "Process / keep active", t: "Update an in-jurisdiction move, add a valid new registration, reactivate restored eligibility, or simply take no adverse action. Non-voting alone is never grounds to remove." },

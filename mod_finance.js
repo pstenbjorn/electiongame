@@ -2,10 +2,24 @@
 (function () {
   "use strict";
 
-  // Sourced from the jurisdiction config at render time.
+  // Sourced from the jurisdiction config at render time. Two penalty models are
+  // supported: "perDay" (per-day accrual to a cap) and "flat" (a fixed civil
+  // penalty, e.g. Virginia's $500 / $1,000-repeat under Va. Code § 24.2-953.2).
   const CUR = () => EG.jx("parameters.finance.currency", "$");
+  const MODEL = () => EG.jx("parameters.finance.model", "perDay");
   const PER_DAY = () => EG.jx("parameters.finance.perDay", 50);
   const FINE_CAP = () => EG.jx("parameters.finance.cap", 1000);
+  const FIRST = () => EG.jx("parameters.finance.firstOffense", 500);
+  const REPEAT = () => EG.jx("parameters.finance.repeatOffense", 1000);
+  const money = (n) => CUR() + n.toLocaleString();
+  function fineFor(c) {
+    return MODEL() === "flat" ? FIRST() : Math.min(c.daysLate * PER_DAY(), FINE_CAP());
+  }
+  function scheduleText() {
+    return MODEL() === "flat"
+      ? `a civil penalty of ${money(FIRST())} (first violation), ${money(REPEAT())} for a repeat in the cycle`
+      : `${money(PER_DAY())}/day, capped at ${money(FINE_CAP())}`;
+  }
 
   // daysLate: 0 if timely. issue: 'math' | 'disclosure' | 'overlimit' | 'prohibited' | null
   const cases = [
@@ -41,8 +55,6 @@
       note: "Filed nine days late AND the totals don't reconcile. Which problem do you act on first?" },
   ];
 
-  function fineFor(c) { return Math.min(c.daysLate * PER_DAY(), FINE_CAP()); }
-
   function correctAction(c) {
     if (c.daysLate > 0) return "fine";              // late filing = statutory penalty
     if (!c.complete || c.issue) return "amend";     // timely but flawed → amendment first
@@ -67,16 +79,27 @@
     batchNoun: "filings",
     caseKicker: "Filing",
     beginLabel: "Open the filings",
-    keyDates: () => `<strong>Statutory penalty schedule.</strong> Late filing: ${CUR()}${PER_DAY()}/day, capped at ${CUR()}${FINE_CAP().toLocaleString()}. Fines are formulaic — not discretionary.`,
+    keyDates: () => `<strong>Statutory penalty schedule.</strong> Late filing: ${scheduleText()}. Fines are set by statute — not discretionary.`,
     intro: [
       "Disclosure is the heart of campaign finance: the public's remedy for money in politics is sunlight, and your job is to keep the reports timely, accurate, and complete.",
       "Two instincts to build here. First, fines are formulaic — you apply the schedule, you don't negotiate it, and you don't waive it for a sympathetic story. Second, due process: a substantive error earns a chance to amend before any penalty.",
     ],
+    primer: {
+      what: "Audits committee campaign-finance reports for timeliness, completeness, and prohibited or excess contributions — accepting clean filings, requiring amendments for substantive errors, and assessing the statutory penalty for late ones.",
+      matters: "Disclosure is the public's remedy for money in politics. Even-handed, by-the-book enforcement is the whole point — no favors for a friend, no extra scrutiny for an opponent.",
+      terms: [
+        ["Amendment", "A notice giving the committee a chance to correct a substantive error before any penalty (due process)."],
+        ["Statutory penalty", "A fine fixed by law for late filing — applied uniformly, never negotiated or waived for a good story."],
+        ["Prohibited / excess contribution", "A contribution from a barred source or over the limit; remedied by refund or redesignation."],
+      ],
+    },
+    question: "Accept this filing, request an amendment, or assess the statutory fine?",
+    stakes: "Let a violation slide and enforcement looks selective; over-penalize a clean filer and you abuse the office.",
     rulesTitle: "How a filing is handled",
     rules: [
       { h: "Accept", t: "Timely, complete, internally consistent, no prohibited or excess contributions → accept the filing." },
       { h: "Request an amendment", t: "A timely report with a math, disclosure, over-limit, or prohibited-source problem gets a notice to amend. Fix the record before any penalty." },
-      { h: "Assess the statutory fine", t: "A late filing triggers the per-day schedule up to the cap (see key dates below). Apply it evenly to everyone; the amount is set by law, not by you." },
+      { h: "Assess the statutory fine", t: "A late filing triggers the statutory penalty schedule (see key dates below). Apply it evenly to everyone; the amount is set by law, not by you." },
       { h: "No selective enforcement", t: "Same rule for every committee. A good excuse does not waive a statutory fine, and a committee you dislike does not earn an extra one." },
     ],
     decisions: [
@@ -96,9 +119,11 @@
       const issue = c.issue || !c.complete
         ? `<span class="flag bad">${issueLabel[c.issue] || "Incomplete"}</span>`
         : `<span class="flag ok">None found</span>`;
+      const fineCalc = MODEL() === "flat"
+        ? `Late filing → a flat statutory civil penalty of <strong>${money(FIRST())}</strong> (first violation; ${money(REPEAT())} if a repeat in the cycle). Set by statute; issue with notice.`
+        : `${c.daysLate} &times; ${money(PER_DAY())}/day = ${money(c.daysLate * PER_DAY())}${c.daysLate * PER_DAY() > FINE_CAP() ? `, capped at <strong>${money(FINE_CAP())}</strong>` : ` → <strong>${money(fineFor(c))}</strong>`}. Formulaic; issue with notice.`;
       const fineRow = c.daysLate > 0
-        ? `<div class="filenote"><span class="filenote-k">Statutory fine calculation</span>
-             <p>${c.daysLate} &times; ${CUR()}${PER_DAY()}/day = ${CUR()}${(c.daysLate * PER_DAY()).toLocaleString()}${c.daysLate * PER_DAY() > FINE_CAP() ? `, capped at <strong>${CUR()}${FINE_CAP().toLocaleString()}</strong>` : ` → <strong>${CUR()}${fineFor(c).toLocaleString()}</strong>`}. Formulaic; issue with notice.</p></div>`
+        ? `<div class="filenote"><span class="filenote-k">Statutory fine calculation</span><p>${fineCalc}</p></div>`
         : "";
       return `
         <div class="envelope casefile">
@@ -124,11 +149,11 @@
     feedback: function (c, ctx) {
       let verdict, detail, cite;
       if (c.daysLate > 0) {
-        detail = `The report is late by ${c.daysLate} day${c.daysLate === 1 ? "" : "s"}. The penalty is set by statute — ${CUR()}${PER_DAY()}/day to a ${CUR()}${FINE_CAP().toLocaleString()} cap — so the fine here is <strong>${CUR()}${fineFor(c).toLocaleString()}</strong>. ` +
+        detail = `The report is late by ${c.daysLate} day${c.daysLate === 1 ? "" : "s"}. The penalty is set by statute — ${scheduleText()} — so the fine here is <strong>${money(fineFor(c))}</strong>. ` +
           (c.complete ? "" : "The report is also incomplete, but the lateness is the action item; you'll still flag the substantive defect. ") +
-          (c.daysLate === 1 ? "A sympathetic reason does not change a formulaic, non-discretionary penalty — waiving it would be selective enforcement. " : "") +
+          (c.daysLate === 1 ? "A sympathetic reason does not change a statutory, non-discretionary penalty — waiving it would be selective enforcement. " : "") +
           "Assess the fine with proper notice, applied the same way you'd apply it to anyone.";
-        cite = { tag: "Late-filing penalty", body: `${CUR()}${PER_DAY()}/day, capped at ${CUR()}${FINE_CAP().toLocaleString()}. Non-discretionary; notice before collection.`, law: "campaign_finance" };
+        cite = { tag: "Late-filing penalty", body: `${scheduleText()}. Statutory and non-discretionary; notice before collection.`, law: "campaign_finance" };
       } else if (!c.complete || c.issue) {
         const what = issueLabel[c.issue] || "an incomplete report";
         detail = `Filed on time, but with a substantive problem: ${what.toLowerCase()}. The right first step is a notice to amend, not a penalty — give the committee the chance to correct the record (refund or redesignate an excess/prohibited contribution, supply missing disclosures, or fix the math). Penalties for substance come only if they fail to cure.`;

@@ -60,6 +60,17 @@
       "Where people vote determines whether they can vote. Two non-negotiables drive every siting decision: the location must be accessible to voters with disabilities, and it must be big enough to serve its precinct without punishing lines.",
       "For each proposed site, weigh accessibility and capacity. A site that's inaccessible but fixable gets temporary accommodations; one that can't be made accessible — or is simply too small — gets rejected, and you keep recruiting.",
     ],
+    primer: {
+      what: "Recruits and approves polling places and early-vote locations, weighing accessibility and capacity for each proposed site and conditioning approval on any fixes needed.",
+      matters: "Where people vote determines whether they can vote. A site that isn't accessible, or is too small for its precinct, is a barrier to the franchise — not a convenience tradeoff.",
+      terms: [
+        ["Accessible (ADA)", "Usable by voters with disabilities — entrance, path of travel, parking, and restrooms (§ 24.2-310)."],
+        ["Remediable", "An accessibility gap a temporary fix resolves — a portable ramp, signage, a marked accessible route."],
+        ["Capacity", "Whether the site can handle the precinct's volume without lines long enough to deter voters."],
+      ],
+    },
+    question: "Approve this site as-is, approve it with accommodations, or reject it?",
+    stakes: "Open an unsuitable site and voters are blocked or face hours-long lines; reject a fixable one and you lose needed capacity.",
     rulesTitle: "How a site is judged",
     rules: [
       { h: "Approve", t: "Accessible as-is and large enough for the precinct's volume → approve the location." },

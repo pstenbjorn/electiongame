@@ -61,10 +61,13 @@ python3 -m http.server 8000
 
 ## Customizing for a jurisdiction
 
-Everything jurisdiction-specific lives in **`jurisdiction.config.json`**:
+Everything jurisdiction-specific lives in **`jurisdiction.config.json`** — which
+ships configured for the **Commonwealth of Virginia** (Arlington County) with
+real Code of Virginia (Title 24.2) citations. A blank, any-state starting
+template is in **`examples/jurisdiction.generic.json`**.
 
 - **`jurisdiction`** — county/state names, office and director titles, the seal glyph. These flow into the header, hub, intros, and feedback via `{county}`, `{state}`, `{director}`, etc. tokens.
-- **`parameters`** — the numbers and dates the modules display: mail-ballot receipt & cure deadlines, the campaign-finance late-fine schedule (`perDay`, `cap`, `currency`), the registration confirmation-wait text.
+- **`parameters`** — the numbers and dates the modules display: mail-ballot receipt & cure deadlines; the campaign-finance penalty model (`model: "perDay"` with `perDay`/`cap`, or `model: "flat"` with `firstOffense`/`repeatOffense` — Virginia uses flat, § 24.2-953.2); the registration confirmation-wait text.
 - **`citations`** — the legal-authorities library keyed by topic (see below).
 
 Two ways the config is loaded:
@@ -76,7 +79,7 @@ Two ways the config is loaded:
    node build-config.js
    ```
 
-To retarget the whole simulation to, say, Maricopa County, AZ: edit the `jurisdiction` block, adjust `parameters`, fill in the state `citations` (below), and you're done — no code changes.
+To retarget to another state: start from `examples/jurisdiction.generic.json`, edit the `jurisdiction` block, set `parameters` (incl. the finance penalty model), and fill in the state `citations`. Note that making citations *valid* can mean tuning a module's mechanics to match the law (e.g., Virginia's flat fine vs. a per-day schedule, or its 125-signature local petition threshold).
 
 ## Legal references
 
@@ -90,10 +93,11 @@ Every decision's feedback ends with a **Legal basis** block drawn from the
   Voting Accessibility for the Elderly and Handicapped Act (52 U.S.C. § 20102),
   VRA § 203 language access (52 U.S.C. § 10503), UOCAVA (52 U.S.C. § 20302), and
   records retention (52 U.S.C. § 20701).
-- **State authorities are deliberately left as `configurable` placeholders.**
-  Signature-cure windows, wrong-precinct counting, petition thresholds, the fine
-  schedule, canvass deadlines, etc. vary by state, so each is a fill-in-the-blank
-  pointing you to the right citation.
+- **State authorities** are filled in for Virginia in the default config (Title
+  24.2, with official `law.lis.virginia.gov` links). In the generic template they
+  are `configurable` placeholders — signature-cure windows, wrong-precinct
+  counting, petition thresholds, the fine schedule, canvass deadlines, etc. vary
+  by state, so each is a fill-in-the-blank pointing you to the right citation.
 
 The resource for finding those state provisions is the **[Election Law
 Navigator](https://electionlawnavigator.org/)** (the Election Law Program —
@@ -131,8 +135,14 @@ Append an object to the `cases` array in the relevant `mod_*.js`. Example
   received: "Nov 4", postmark: "Nov 2",
   timely: true,                     // false => genuinely late (no cure)
   blurb: "Short framing shown to the player.",
+  background: "Optional 1–2 sentences of scenario context (shown above the facts).",
+  stakes: "Optional 'At stake' line (falls back to the module-level cfg.stakes).",
 }
 ```
+
+Each module also carries an intro **`cfg.primer`** ({ what, matters, terms }) — the
+"Desk briefing" — and a standing **`cfg.question`** prompt shown on every case, so
+new cases inherit consistent framing without extra per-case text.
 
 The correct action is **derived from the facts** by each module's `correctAction`,
 so authored cases stay consistent with the stated rules. No engine changes needed.

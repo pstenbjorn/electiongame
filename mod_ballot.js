@@ -101,6 +101,17 @@
       "Everything downstream depends on this: if a ballot is mislaid out or a scanner miscounts, no amount of careful processing later can fix it. You test BEFORE the election, not after.",
       "You'll alternate between proofreading ballot styles and reconciling L&A test decks — pre-marked decks with a known answer. Approve only what is provably correct; a single defect or a one-ballot miscount sends it back.",
     ],
+    primer: {
+      what: "Proofreads ballot layouts and reconciles logic-and-accuracy (L&A) test decks — certifying that ballots are correct and that the equipment counts accurately before anything goes live.",
+      matters: "Everything downstream depends on this desk. A mislaid ballot or a miscounting scanner can't be fixed on Election Day; it's caught here or not at all.",
+      terms: [
+        ["Ballot proof", "A draft ballot checked against layout rules — instructions, rotation, candidate targets, language."],
+        ["L&A test", "Running a pre-marked deck with a known result to confirm the equipment tallies it correctly (§ 24.2-625 et seq.)."],
+        ["Test deck", "Ballots marked to a known total; the machine's report must match it exactly, line by line."],
+      ],
+    },
+    question: "Approve / certify this item, or return it as failed?",
+    stakes: "Approve a defect and it reaches every voter who uses that ballot or machine; return a clean item and you burn time and money.",
     rulesTitle: "Approve only what's provably right",
     rules: [
       { h: "Proof every check", t: "A ballot style passes only if every layout check passes — instructions, rotation, targets, bilingual text, no overflow. One failure returns it." },

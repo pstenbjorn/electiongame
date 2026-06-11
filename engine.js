@@ -211,6 +211,20 @@
     }
   };
 
+  // Desk briefing shown on a module's intro screen.
+  function renderPrimer(p) {
+    if (!p) return "";
+    const terms = (p.terms && p.terms.length)
+      ? `<dl class="terms">${p.terms.map(([t, d]) => `<dt>${EG.tmpl(t)}</dt><dd>${EG.tmpl(d)}</dd>`).join("")}</dl>`
+      : "";
+    return `<div class="primer">
+        <div class="primer-head">Desk briefing</div>
+        ${p.what ? `<p><strong>What this office does.</strong> ${EG.tmpl(p.what)}</p>` : ""}
+        ${p.matters ? `<p><strong>Why it matters.</strong> ${EG.tmpl(p.matters)}</p>` : ""}
+        ${terms}
+      </div>`;
+  }
+
   // ---------------------------------------------------------------------------
   // makeAdjudication: build a full module from a config object.
   // ---------------------------------------------------------------------------
@@ -239,6 +253,7 @@
         <div class="kicker">${EG.tmpl(cfg.label)}</div>
         <h1>${EG.tmpl(cfg.headline || cfg.title)}</h1>
         ${introHtml}
+        ${renderPrimer(cfg.primer)}
         <h2>${EG.tmpl(cfg.rulesTitle || "The rules of the desk")}</h2>
         <ul class="rules-list">${rulesHtml}</ul>
         ${keyDates ? `<p class="muted">${EG.tmpl(keyDates)}</p>` : ""}
@@ -260,6 +275,7 @@
     const c = cfg.cases[run.index];
     EG.setProgress(run.index, cfg.cases.length);
     const head = cfg.caseHead ? cfg.caseHead(c) : { title: c.id, sub: "", id: c.id };
+    const stakes = c.stakes || cfg.stakes;
 
     const decisions = cfg.decisions.map(function (d) {
       const cls = toneClass[d.tone] || "btn-primary";
@@ -274,7 +290,12 @@
           <span class="voter-id">${head.id || ""}</span>
         </div>
         ${head.sub ? `<p class="muted" style="margin:.2rem 0 0">${EG.tmpl(head.sub)}</p>` : ""}
+        ${c.background ? `<div class="case-context">${EG.tmpl(c.background)}</div>` : ""}
         <div class="case-body">${EG.tmpl(cfg.caseBody(c))}</div>
+        ${(cfg.question || stakes) ? `<div class="case-ask">
+          ${cfg.question ? `<div class="ask-q"><span class="ask-label">Your determination</span>${EG.tmpl(cfg.question)}</div>` : ""}
+          ${stakes ? `<div class="ask-stakes"><span class="ask-label">At stake</span>${EG.tmpl(stakes)}</div>` : ""}
+        </div>` : ""}
         <div class="decisions" id="decisions">${decisions}</div>
         <div id="feedbackSlot"></div>
       </section>

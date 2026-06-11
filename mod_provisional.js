@@ -62,6 +62,17 @@
       "Provisional ballots are the fail-safe of the system: when eligibility can't be confirmed at the polling place, the voter still casts a ballot and you decide afterward whether — and how much of it — counts.",
       "Each ballot carries a reason code. Your job is to research the facts and apply the rule, not your instinct. Every voter who is eligible gets counted; every contest a voter wasn't entitled to vote stays uncounted.",
     ],
+    primer: {
+      what: "Adjudicates provisional ballots — the fail-safe ballots cast when a voter's eligibility can't be confirmed at the polling place — deciding after the fact whether, and how much of, each one counts.",
+      matters: "Provisional ballots exist so an eligible voter is never simply turned away over a records glitch. The default question is how much of the ballot counts, not how to reject it.",
+      terms: [
+        ["Provisional ballot", "A ballot cast and set aside for later eligibility review by the electoral board (§ 24.2-653.01)."],
+        ["Wrong precinct", "Right jurisdiction but wrong precinct — often counts for the contests the voter was actually eligible to vote."],
+        ["ID cure", "Providing required identification by a deadline so a provisional cast for lack of ID can count."],
+      ],
+    },
+    question: "Count this provisional in full, count only the eligible contests, or reject it?",
+    stakes: "Reject an eligible voter and their ballot is lost; count an ineligible one and you corrupt the result.",
     rulesTitle: "How a provisional is resolved",
     rules: [
       { h: "Count in full", t: "Eligibility confirmed and the voter was in the right place — count every contest. A clerical omission or an unprocessed-but-timely registration still counts." },
