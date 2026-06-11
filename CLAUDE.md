@@ -141,12 +141,19 @@ parity (config.js = `window.JURISDICTION_DEFAULT = <the JSON>`).
 
 ## Testing approach
 
-- Logic harness (stub DOM, no deps): loads all modules, runs `correctAction`,
-  `caseBody`, `feedback` for every case × decision; checks distributions, dup IDs.
-- Integration: `npm install jsdom --no-save` (NOT committed), drive real clicks
-  through every module to the after-action screen; assert legal-basis renders,
-  federal links present, branding applies, retarget has no `{token}` leakage.
-- Always remove `node_modules`/`package*.json` before committing.
+In-environment, no IDE needed. Dev deps are installed on demand and never committed.
+
+- **Smoke harness (committed):** `npm install jsdom --no-save && node test/smoke.mjs`.
+  Loads real `index.html` headlessly, runs the logic harness over every module,
+  drives a full practice playthrough of each desk to its after-action review and a
+  full Career cycle to the finale, checks branding + legal-basis. Exits non-zero on
+  failure. This is the one-command regression check — run it after any change.
+- **Screenshots (committed):** `npm install playwright --no-save && node test/screenshots.mjs`
+  → `test/shots/*.png` (gitignored). Uses the pre-provisioned Chromium at
+  `/opt/pw-browsers` (PLAYWRIGHT_BROWSERS_PATH; the binary *download* is network-blocked,
+  but the binary is already present). Serves over a temp HTTP server so the live
+  JSON config is used. Send PNGs to the user with SendUserFile for a visual pass.
+- Always remove `node_modules`/`package*.json` before committing (`.gitignore` covers them).
 
 ## Git / workflow state
 

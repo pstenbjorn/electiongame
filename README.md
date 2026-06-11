@@ -62,6 +62,26 @@ python3 -m http.server 8000
 # then visit http://localhost:8000
 ```
 
+## Testing (no IDE needed)
+
+The app is no-build, but it ships with headless tests you can run in seconds.
+Dev dependencies are installed on demand and are never committed.
+
+```bash
+# One-command smoke test: logic + a full playthrough of every desk AND a whole
+# Career cycle, headlessly. Exits non-zero on any regression.
+npm install jsdom --no-save
+node test/smoke.mjs
+
+# Render key screens to PNGs (test/shots/, gitignored) for a visual pass.
+npm install playwright --no-save
+node test/screenshots.mjs
+```
+
+`test/smoke.mjs` is the regression check — run it after any change. `test/screenshots.mjs`
+captures the hub, a desk briefing, a ruling with its legal-basis block, the Career
+in-tray, a consulted ticket, a stamped ruling, and the Certification Day finale.
+
 ## Project layout
 
 | File | Role |
