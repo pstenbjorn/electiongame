@@ -55,6 +55,11 @@
   }
   function clampTrust(v) { return Math.max(0, Math.min(100, Math.round(v))); }
   function setTrust(v) { S.trust = clampTrust(v); EG.trust.set(S.trust); }
+  function startCycle() {
+    S = newRun(); S.trust = clampTrust(S.trust);
+    if (EG.trust.setQuiet) EG.trust.setQuiet(S.trust); else EG.trust.set(S.trust);
+    runStage(0);
+  }
   function scoreDelta(cfg, correct, chosen, ok) {
     const P = cfg.penalties || {};
     if (ok) return P.correct != null ? P.correct : 4;
@@ -136,7 +141,7 @@
         </div>
       </section>`);
     EG.mount(view);
-    document.getElementById("goBtn").addEventListener("click", function () { S = newRun(); setTrust(S.trust); runStage(0); });
+    document.getElementById("goBtn").addEventListener("click", startCycle);
     document.getElementById("hubBtn").addEventListener("click", function () { EG.hub(); });
   }
 
@@ -182,6 +187,7 @@
             <div class="dm"><span class="dm-k">Staff hours</span><span class="dm-v">${hoursDots}</span></div>
           </div>
         </div>
+        ${cycleRail()}
         <p class="lead">${EG.tmpl(st.brief)}</p>
         <div class="inbox-head"><span>In-tray</span><span class="muted">${done}/${stage.tickets.length} cleared</span></div>
         <div class="inbox">${rows}</div>
@@ -200,6 +206,17 @@
     const endBtn = document.getElementById("endDayBtn");
     if (endBtn) endBtn.addEventListener("click", function () { stageWrap(); });
     document.getElementById("quitBtn").addEventListener("click", function () { EG.hub(); });
+  }
+
+  // Journey rail: one pip per stage — done, current (pulsing), upcoming.
+  function cycleRail() {
+    const pips = TIMELINE.map(function (stg, i) {
+      const m = EG.moduleById(stg.module);
+      const state = i < S.stageIdx ? "done" : i === S.stageIdx ? "current" : "next";
+      return `<span class="cycle-pip ${state}" title="${stg.title}">${m ? m.icon : "&#9733;"}</span>`;
+    }).join('<span class="cycle-link"></span>');
+    return `<div class="cycle-rail" aria-label="Stage ${S.stageIdx + 1} of ${TIMELINE.length}">${pips}
+      <span class="cycle-label">Stage ${S.stageIdx + 1} of ${TIMELINE.length}</span></div>`;
   }
 
   function dots(remaining, total) {
@@ -294,6 +311,11 @@
         </div>
       </div>`);
     document.getElementById("ticketFeedback").appendChild(node);
+    if (EG.fx) {
+      EG.fx.verdict(ok, node, { stamp: true });
+      if (bonus) EG.fx.toast(`🔥 <strong>${S.streak} in a row!</strong> Streak bonus +${bonus} trust`, "good");
+      else if (!ok && critical) EG.fx.toast("⚠ <strong>Critical error</strong> — that one could reach a courtroom", "bad");
+    }
     document.getElementById("backBtn").addEventListener("click", function () {
       if (remaining) renderInbox(); else stageWrap();
     });
@@ -330,6 +352,7 @@
         </div>
       </section>`);
     EG.mount(view);
+    if (EG.fx) EG.fx.celebrate(view, { confetti: false });
     document.getElementById("nextBtn").addEventListener("click", function () {
       if (last) finale(); else runStage(S.stageIdx + 1);
     });
@@ -404,7 +427,8 @@
         </div>
       </section>`);
     EG.mount(view);
-    document.getElementById("againBtn").addEventListener("click", function () { S = newRun(); setTrust(S.trust); runStage(0); });
+    if (EG.fx) EG.fx.celebrate(view, { confetti: /^(Distinguished|Certified)/.test(credential) });
+    document.getElementById("againBtn").addEventListener("click", startCycle);
     document.getElementById("hubBtn").addEventListener("click", function () { EG.hub(); });
   }
 

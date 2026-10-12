@@ -49,6 +49,12 @@ The hub opens with two entry points:
 - **Practice by department** — drill any single desk as a full batch with its own
   after-action review (trust resets each time). Good for focused study.
 
+It plays like a game, not an exam: screens and cards animate in, the trust meter
+counts and flashes with a floating ±delta on every call, rulings land with a
+stamp "thud" (a shake for a bad call, a glow for a good one), streaks and
+critical errors pop toasts, and a passing run ends in a certificate reveal with
+confetti. All motion respects the OS "reduce motion" setting.
+
 ## Run it
 
 No build step, no dependencies. Either:
@@ -76,6 +82,9 @@ node test/smoke.mjs
 # Render key screens to PNGs (test/shots/, gitignored) for a visual pass.
 npm install playwright --no-save
 node test/screenshots.mjs
+
+# Record a ~1 minute paced demo of the animations (test/shots/demo.webm).
+node test/demo-video.mjs
 ```
 
 `test/smoke.mjs` is the regression check — run it after any change. `test/screenshots.mjs`
