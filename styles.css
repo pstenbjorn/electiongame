@@ -837,3 +837,15 @@ h2 { font-size: 1.2rem; letter-spacing: -0.1px; margin-top: 1.4rem; }
   .hub-hero h1 { font-size: 1.6rem; }
   .aar-stamp { position: static; display: inline-block; margin-bottom: .6rem; }
 }
+
+/* Keep stamps clear of the text they sit beside. */
+.ticket-fb h3 { padding-right: 180px; }
+.ticket-fb h3 .muted { float: none !important; display: block; margin-top: .3rem; font-size: .84rem; font-weight: 600 !important; }
+.aar-card .kicker, .aar-card h1 { padding-right: 210px; }
+@media (max-width: 560px) {
+  .ticket-fb h3, .aar-card .kicker, .aar-card h1 { padding-right: 0; }
+  .ticket-fb .stamp { position: static; display: inline-block; margin-bottom: .6rem; }
+}
+
+/* The top bar is the game HUD: keep Public Trust in view while scrolling. */
+.topbar { position: sticky; top: 0; z-index: 50; }
