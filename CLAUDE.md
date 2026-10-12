@@ -180,14 +180,32 @@ In-environment, no IDE needed. Dev deps are installed on demand and never commit
   (`git checkout -b <name> main`) → push → open a PR → merge, deleting the branch
   on merge (the PR's "Delete branch" button). The original `claude/gracious-newton-s3sizd`
   dev branch is retired (its work is all in `main`).
-- History: **PR #1 and PR #3 both merged** into `main` — eight departments,
-  legal citations, jurisdiction config, Career mode, the test harness, and the
-  SessionStart hook.
+- History (all merged into `main`): **PR #1** eight departments + citations +
+  config; **PR #3** Virginia citations, case scaffold, visual v2, Career mode,
+  test harness, SessionStart hook; **PR #4** this branch-off-`main` workflow;
+  **PR #5** game-feel layer (`fx.js`), sticky HUD, demo-video tooling.
 - **Environment proxy limits:** `git push` of commits and new branches works, but
   the proxy blocks GitHub *write* operations — changing the default branch and
   deleting remote branches both return 403 (via `git` and via `gh`/REST). Do those
   in the GitHub UI. PR creation via the GitHub MCP works.
 - Model identity must NOT appear in commits/PRs/code (chat only).
+
+## ▶ Where we left off (last session: Oct 2026)
+
+- **PR #5 (game feel) is merged.** The user is smoke-testing it and reviewed the
+  demo video (`node test/demo-video.mjs`).
+- **Next session = a design session.** The user wants a **Claude Design** pass on
+  the look. Start there; do not begin new gameplay features unless asked.
+  - Build on the existing layers, don't replace them: base theme → "Visual
+    refresh v2" → "Game feel v3" at the end of `styles.css`. Colors are CSS
+    variables on `:root` (navy / gold / paper), which makes a theme pass easy.
+  - Keep it civic and public-sector appropriate (the user's standing ask),
+    keep `prefers-reduced-motion` support, and keep `fx.js` hooks working.
+  - Verify with `node test/smoke.mjs`, then render with `node test/screenshots.mjs`
+    and send the PNGs (and a fresh `demo.webm`) to the user for review.
+- Tuning dials the user may ask about after smoke-testing: shake strength
+  (`fxShake`), confetti amount/duration (`fx.confetti`), toast duration (2.6s in
+  `fx.toast`), Career start trust (85), staff hours per day, escalation thresholds.
 
 ## Feedback log & agreed direction (2026 review)
 
@@ -217,6 +235,8 @@ User feedback after smoke-testing, and what was done / planned:
    shake/glow on rulings, streak + critical-error toasts, a career journey rail,
    alarm/praise escalations, AAR grade stamp, and a certificate reveal with
    count-ups + confetti (Certifiable / Distinguished / Certified only).
+
+6. **Design session** — NEXT (see "Where we left off" above).
 
 Other backlog: Election Day incident-command capstone; RLA mini-game; wire
 `language_access` (VRA §203) into ballot bilingual check; more gray-area cases;
