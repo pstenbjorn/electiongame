@@ -387,6 +387,7 @@
       </div>
     `);
     document.getElementById("feedbackSlot").appendChild(node);
+    if (EG.fx) EG.fx.verdict(ok, node);
     document.getElementById("nextBtn").addEventListener("click", function () {
       if (last) runAAR(cfg, run);
       else { run.index++; runCase(cfg, run); }
@@ -429,8 +430,10 @@
     const lessons = (cfg.lessons || []).map((l) => `<li>${EG.tmpl(l)}</li>`).join("");
     const nextMod = nextReadyAfter(cfg.id);
 
+    const stampCls = grade === "Certifiable" ? "certified" : grade === "Needs review" ? "review" : "contested";
     const view = EG.el(`
-      <section class="card">
+      <section class="card aar-card">
+        <div class="stamp ${stampCls} aar-stamp">${grade.toUpperCase()}</div>
         <div class="kicker">After-Action Review &mdash; ${EG.tmpl(cfg.label)}</div>
         <h1>${cfg.aarTitle || "Batch processed"}</h1>
         <div style="display:flex;align-items:baseline;gap:1rem;flex-wrap:wrap">
@@ -452,6 +455,7 @@
       </section>
     `);
     EG.mount(view);
+    if (EG.fx) EG.fx.celebrate(view, { confetti: grade === "Certifiable" });
     document.getElementById("againBtn").addEventListener("click", () => { EG.trust.reset(); runCase(cfg, freshRun()); });
     document.getElementById("hubBtn").addEventListener("click", () => EG.hub());
     if (nextMod) document.getElementById("nextModBtn").addEventListener("click", () => EG.launch(nextMod.id));

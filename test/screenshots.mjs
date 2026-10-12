@@ -1,102 +1,77 @@
-/* test/screenshots.mjs — render key screens to PNGs with a headless browser.
+/* test/screenshots.mjs — render key screens (and key motion moments) to PNGs.
  *
  *   npm install playwright --no-save
- *   node test/screenshots.mjs            # writes test/shots/*.png
+ *   node test/screenshots.mjs            # writes test/shots/*.png (gitignored)
  *
- * Uses the pre-provisioned Chromium when present (PLAYWRIGHT_BROWSERS_PATH);
- * falls back to Playwright's managed browser otherwise. Serves the app over a
- * tiny local HTTP server so the live jurisdiction.config.json is used.
+ * Clean shots wait for entrance animations to settle; "motion" shots are taken
+ * mid-animation on purpose (shake, floating trust delta, stamp thud, toast,
+ * confetti). Career is played perfectly so the finale earns its celebration.
  */
-import { chromium } from "playwright";
-import { createServer } from "node:http";
-import { readFileSync, mkdirSync, existsSync } from "node:fs";
-import { fileURLToPath } from "node:url";
-import { dirname, join, extname } from "node:path";
+import { mkdirSync } from "node:fs";
+import { join } from "node:path";
+import { ROOT, serveApp, launch, answer, careerStep, scrollTo } from "./lib/drive.mjs";
 
-const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const SHOTS = join(ROOT, "test", "shots");
 mkdirSync(SHOTS, { recursive: true });
 
-const TYPES = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".json": "application/json", ".mjs": "text/javascript" };
-const server = createServer((req, res) => {
-  let p = decodeURIComponent(req.url.split("?")[0]);
-  if (p === "/") p = "/index.html";
-  try {
-    const body = readFileSync(join(ROOT, p));
-    res.writeHead(200, { "Content-Type": TYPES[extname(p)] || "application/octet-stream" });
-    res.end(body);
-  } catch { res.writeHead(404); res.end("not found"); }
-});
-await new Promise((r) => server.listen(0, r));
-const base = `http://localhost:${server.address().port}/`;
+const app = await serveApp();
+const browser = await launch();
+const page = await browser.newPage({ viewport: { width: 980, height: 1100 }, deviceScaleFactor: 2 });
+const wait = (ms) => page.waitForTimeout(ms);
+const settle = () => wait(1200);
+const shot = async (name, opts) => {
+  await page.screenshot({ path: join(SHOTS, name + ".png"), fullPage: !(opts && opts.viewport) });
+  console.log("  saved", name + ".png");
+};
+const clickSel = (s) => page.evaluate((s) => document.querySelector(s).click(), s);
 
-// Prefer the pre-provisioned chromium binary (download is network-blocked here).
-const candidates = [
-  process.env.PLAYWRIGHT_BROWSERS_PATH && join(process.env.PLAYWRIGHT_BROWSERS_PATH, "chromium-1194/chrome-linux/chrome"),
-  "/opt/pw-browsers/chromium/chromium",
-].filter(Boolean);
-const execPath = candidates.find((p) => existsSync(p));
-
-const browser = await chromium.launch({
-  args: ["--no-sandbox", "--disable-dev-shm-usage"],
-  ...(execPath ? { executablePath: execPath } : {}),
-});
-const page = await browser.newPage({ viewport: { width: 940, height: 1180 }, deviceScaleFactor: 2 });
-const shot = async (name) => { await page.screenshot({ path: join(SHOTS, name + ".png"), fullPage: true }); console.log("  saved", name + ".png"); };
-const goHub = () => page.evaluate(() => window.EG.hub());
-
-await page.goto(base, { waitUntil: "networkidle" });
+await page.goto(app.base, { waitUntil: "networkidle" });
 await page.waitForSelector(".dept-card");
-await shot("01-hub");
+await settle(); await shot("01-hub");
 
-// A practice desk: intro (with Desk briefing), then a ruling with the legal-basis block.
+// Practice: briefing → a good call → a bad call caught mid-shake.
 await page.evaluate(() => window.EG.launch("provisional"));
-await page.waitForSelector(".primer");
-await shot("02-desk-briefing");
-await page.click("#startBtn");
-await page.waitForSelector("#decisions .btn");
-await page.click("#decisions .btn");
-await page.waitForSelector(".legal-basis");
-await shot("03-ruling-legal-basis");
+await settle(); await shot("02-desk-briefing");
+await clickSel("#startBtn"); await wait(300);
+await answer(page); await settle(); await shot("03-ruling-correct");
+await clickSel("#nextBtn"); await wait(400);
+await answer(page, { wrong: true }); await wait(170);
+await shot("04-ruling-wrong-motion", { viewport: true });
 
-// Career: intro, inbox, a ticket with the code consulted, a stamped ruling, finale.
-await goHub();
-await page.waitForSelector("#careerStartBtn");
-await page.click("#careerStartBtn");
-await page.waitForSelector("#goBtn");
-await shot("04-career-intro");
-await page.click("#goBtn");
-await page.waitForSelector(".inbox .ticket");
-await shot("05-career-inbox");
-await page.click(".inbox .ticket");
-await page.waitForSelector("#consultBtn");
-await page.click("#consultBtn");
-await page.waitForSelector(".consult-result .legal-basis");
-await shot("06-career-ticket-consult");
-await page.click("#decisions .btn");
-await page.waitForSelector(".stamp");
-await shot("07-career-stamp");
+// A perfect practice batch → CERTIFIABLE stamp + confetti.
+await page.evaluate(() => window.EG.launch("results"));
+await clickSel("#startBtn");
+for (let i = 0; i < 40; i++) {
+  if (await page.$(".aar-score")) break;
+  if (await page.$("#decisions .btn:not([disabled])")) { await answer(page); continue; }
+  await clickSel("#nextBtn");
+}
+await wait(1600); await shot("05-aar-certifiable", { viewport: true });
 
-// Fast-forward the rest of the cycle in-page, then capture the finale.
-await page.evaluate(async () => {
-  const $ = (s) => document.querySelector(s);
-  const $$ = (s) => Array.from(document.querySelectorAll(s));
-  const click = (el) => el && el.dispatchEvent(new MouseEvent("click", { bubbles: true }));
-  let guard = 0;
-  while (guard++ < 800) {
-    if ($(".certificate")) return;
-    if ($("#backBtn")) { click($("#backBtn")); continue; }
-    if ($("#decisions") && !$("#ticketFeedback .feedback")) { click($$("#decisions .btn")[0]); continue; }
-    if ($("#endDayBtn")) { click($("#endDayBtn")); continue; }
-    if ($("#nextBtn")) { click($("#nextBtn")); continue; }
-    const pending = $$(".ticket:not(.done)").filter((b) => !b.disabled);
-    if (pending.length) { click(pending[0]); continue; }
-    return;
+// Career: intro, the in-tray with its journey rail, a consulted ticket, a stamped ruling.
+await page.evaluate(() => window.EG.hub());
+await wait(200); await clickSel("#careerStartBtn");
+await settle(); await shot("06-career-intro");
+await clickSel("#goBtn"); await settle(); await shot("07-career-inbox");
+await clickSel(".inbox .ticket"); await wait(300);
+await clickSel("#consultBtn"); await settle(); await shot("08-ticket-consult");
+await answer(page); await scrollTo(page, ".ticket-fb"); await wait(450);
+await shot("09-stamp-thud", { viewport: true });
+
+// Play the rest perfectly, catching the streak toast, the praise event, and the finale.
+let decisions = 1, toastShot = false, praiseShot = false;
+for (let guard = 0; guard < 400; guard++) {
+  if (!praiseShot && (await page.$(".escalation.good"))) { await settle(); await shot("11-praise-escalation"); praiseShot = true; }
+  const did = await careerStep(page);
+  if (did === "decide") {
+    decisions++;
+    if (decisions === 5 && !toastShot) { await wait(450); await shot("10-streak-toast", { viewport: true }); toastShot = true; }
   }
-});
+  if (did === "finale" || did === "stuck") break;
+}
 await page.waitForSelector(".certificate");
-await shot("08-certification-finale");
+await wait(1500); await shot("12-finale-distinguished", { viewport: true });
 
 await browser.close();
-server.close();
+app.close();
 console.log("\nScreenshots written to test/shots/");

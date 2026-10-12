@@ -25,7 +25,7 @@ catch {
 
 // Script load order mirrors index.html.
 const SCRIPTS = [
-  "config.js", "signature.js", "engine.js",
+  "config.js", "signature.js", "engine.js", "fx.js",
   "mod_petition.js", "mod_finance.js", "mod_siting.js", "mod_ballot.js",
   "mod_registration.js", "mod_vbm.js", "mod_provisional.js", "mod_results.js",
   "career.js", "app.js",
@@ -124,6 +124,15 @@ ok(stageWraps === 8, `closed out all 8 stages (got ${stageWraps})`);
 ok(stamps > 0, `CERTIFIED/CONTESTED stamp rendered (${stamps}×)`);
 ok(legalSeen > 0, `legal-basis block rendered on rulings (${legalSeen}×)`);
 ok(!!$(".badges"), "finale shows the badges panel");
+
+// ------------------------------------------------------------------ fx layer
+console.log("\nGame-feel layer (fx.js):");
+ok(!!(EG.fx && EG.fx.verdict && EG.fx.celebrate && EG.fx.toast), "fx helpers loaded");
+EG.hub();
+ok(!!$("#app > .fx-enter"), "screens mount with the entrance animation class");
+ok(typeof EG.trust.setQuiet === "function", "trust meter wrapped (quiet set available)");
+EG.fx.toast("test", "good");
+ok(!!$("#fx-toasts .fx-toast"), "toasts render");
 
 // ------------------------------------------------------------- config / citations
 console.log("\nConfig & citations:");

@@ -57,6 +57,16 @@ Provisional → Decertified) plus badges. Career reuses each module's primitives
 via `EG.moduleById(id).cfg`; practice mode is untouched. Best result saved to
 `localStorage` under `__career__`.
 
+**Game-feel layer (`fx.js`)**, loaded right after `engine.js`, wraps two engine
+primitives so every screen benefits without module changes: `EG.mount` (adds
+`.fx-enter`; staggers cards/tickets/tallies/badges via a `--i` CSS var) and
+`EG.trust.set` (count-up, red/green flash, floating ±delta). Use
+`EG.trust.setQuiet(v)` for non-gameplay trust changes (resets, starting a cycle).
+Helpers: `EG.fx.verdict(ok, el, {stamp})`, `EG.fx.toast(html, kind)` (max 2 on
+screen), `EG.fx.celebrate(view, {confetti})` (count-ups; clears toasts),
+`EG.fx.confetti()`. Inert under `prefers-reduced-motion` and in jsdom; CSS lives
+in the "Game feel v3" layer at the end of `styles.css`.
+
 **Per-module content scaffold** (added for clarity): `cfg.primer` ({what,
 matters, terms[]}) renders a "Desk briefing" on the intro; `cfg.question` is the
 standing determination prompt shown each case; `cfg.stakes` (or per-case
@@ -76,6 +86,7 @@ context above the facts. The engine renders these around each `caseBody`.
 | `config.js` | GENERATED `file://` fallback of the config (`node build-config.js`) |
 | `build-config.js` | Regenerates `config.js` from the JSON |
 | `career.js` | **Career / Election-Cycle mode** — timeline, inbox+staff-hours, escalation, finale |
+| `fx.js` | **Game-feel layer** — screen/card entrances, trust-meter juice, verdict shake/glow, toasts, count-ups, confetti |
 | `app.js` | Bootstrap |
 | `mod_petition.js` | 1. Candidate Qualification & Petition Validation (place / cure / disqualify) |
 | `mod_finance.js` | 2. Campaign Finance (accept / amend / fine — formulaic fines) |
@@ -153,6 +164,13 @@ In-environment, no IDE needed. Dev deps are installed on demand and never commit
   `/opt/pw-browsers` (PLAYWRIGHT_BROWSERS_PATH; the binary *download* is network-blocked,
   but the binary is already present). Serves over a temp HTTP server so the live
   JSON config is used. Send PNGs to the user with SendUserFile for a visual pass.
+- **Demo video:** `node test/demo-video.mjs` → `test/shots/demo.webm` (~1 min paced
+  run: practice good/bad calls, career consult/stamps/streak/praise, finale).
+  Streams Chromium screencast frames into the provisioned `ffmpeg-linux`
+  (Playwright's own recorder fails here — its ffmpeg revision doesn't match).
+  Shared browser plumbing (server, Chromium discovery, a "perfect player" that
+  answers via each module's `correctAction`) is in `test/lib/drive.mjs`.
+- The SessionStart hook installs jsdom + playwright, so all three run with no setup.
 - Always remove `node_modules`/`package*.json` before committing (`.gitignore` covers them).
 
 ## Git / workflow state
@@ -192,6 +210,13 @@ User feedback after smoke-testing, and what was done / planned:
    Possible polish next: per-ticket deadlines/timers; consequence engine (earlier
    calls resurfacing); difficulty tiers; sound. Visual still baseline v2 — Claude
    Design pass welcome.
+
+5. **More game feel / visual impact** — DONE (`fx.js` + "Game feel v3" CSS):
+   motion on every screen, tactile 3D buttons, bolder hub (watermark seal, gold
+   CTA with glow/shine), trust-meter count/flash/±delta, heavier stamp "thud",
+   shake/glow on rulings, streak + critical-error toasts, a career journey rail,
+   alarm/praise escalations, AAR grade stamp, and a certificate reveal with
+   count-ups + confetti (Certifiable / Distinguished / Certified only).
 
 Other backlog: Election Day incident-command capstone; RLA mini-game; wire
 `language_access` (VRA §203) into ballot bilingual check; more gray-area cases;
