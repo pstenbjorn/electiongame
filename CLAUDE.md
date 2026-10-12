@@ -157,11 +157,18 @@ In-environment, no IDE needed. Dev deps are installed on demand and never commit
 
 ## Git / workflow state
 
-- Dev branch: `claude/gracious-newton-s3sizd`. `main` was created at the initial
-  commit (`8b7ec9a`) so a PR had a base.
-- **PR #1** opened: feature → main (eight departments + citations + config).
-- Push is via the git proxy (the GitHub MCP `push_files`/contents API returns 403
-  for this repo; `git push -u origin <branch>` works).
+- **`main` is the trunk — branch new work off `main` and PR into it.** Do not
+  commit directly to `main`: use a short-lived feature branch
+  (`git checkout -b <name> main`) → push → open a PR → merge, deleting the branch
+  on merge (the PR's "Delete branch" button). The original `claude/gracious-newton-s3sizd`
+  dev branch is retired (its work is all in `main`).
+- History: **PR #1 and PR #3 both merged** into `main` — eight departments,
+  legal citations, jurisdiction config, Career mode, the test harness, and the
+  SessionStart hook.
+- **Environment proxy limits:** `git push` of commits and new branches works, but
+  the proxy blocks GitHub *write* operations — changing the default branch and
+  deleting remote branches both return 403 (via `git` and via `gh`/REST). Do those
+  in the GitHub UI. PR creation via the GitHub MCP works.
 - Model identity must NOT appear in commits/PRs/code (chat only).
 
 ## Feedback log & agreed direction (2026 review)
